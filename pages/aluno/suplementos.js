@@ -180,7 +180,7 @@ export default function AlunoSuplemento() {
             + Adicionar Suplemento
           </button>
           <button className={styles.actionBtn}>
-            🛒 Marcar como 'Acabando'
+            🛒 Marcar como &quot;Acabando&quot;
           </button>
           <button className={styles.actionBtn}>
             📊 Ver Histórico
