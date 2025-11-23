@@ -1,10 +1,12 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDumbbell, faTrophy, faLightbulb, faClock } from '@fortawesome/free-solid-svg-icons'
 import styles from '../styles/MotivationalFeed.module.css'
 
 const messages = [
   {
     id: 1,
     type: 'motivation',
-    icon: '💪',
+    icon: faDumbbell,
     title: 'Continue assim!',
     message: 'Você está mantendo uma ótima consistência essa semana. Não desista!',
     time: '2h atrás'
@@ -12,7 +14,7 @@ const messages = [
   {
     id: 2,
     type: 'achievement',
-    icon: '🏆',
+    icon: faTrophy,
     title: 'Meta alcançada!',
     message: 'Parabéns! Você completou 100% dos treinos esta semana.',
     time: '1 dia atrás'
@@ -20,7 +22,7 @@ const messages = [
   {
     id: 3,
     type: 'tip',
-    icon: '💡',
+    icon: faLightbulb,
     title: 'Dica do Personal',
     message: 'Lembre-se de manter a hidratação antes e depois dos treinos.',
     time: '2 dias atrás'
@@ -28,7 +30,7 @@ const messages = [
   {
     id: 4,
     type: 'reminder',
-    icon: '⏰',
+    icon: faClock,
     title: 'Lembrete',
     message: 'Não esqueça de registrar suas refeições de hoje!',
     time: '3 dias atrás'
@@ -42,7 +44,9 @@ export default function MotivationalFeed() {
       <div className={styles.feed}>
         {messages.map(msg => (
           <div key={msg.id} className={`${styles.message} ${styles[msg.type]}`}>
-            <span className={styles.icon}>{msg.icon}</span>
+            <span className={styles.icon}>
+              <FontAwesomeIcon icon={msg.icon} />
+            </span>
             <div className={styles.content}>
               <div className={styles.messageTitle}>{msg.title}</div>
               <div className={styles.messageText}>{msg.message}</div>

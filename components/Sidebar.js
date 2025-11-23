@@ -1,23 +1,35 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faChartLine,
+  faUsers,
+  faDumbbell,
+  faUtensils,
+  faComments,
+  faDollarSign,
+  faHome,
+  faPills,
+  faChartBar
+} from '@fortawesome/free-solid-svg-icons'
 import styles from '../styles/Sidebar.module.css'
 
 const personalMenuItems = [
-  { label: 'Dashboard', path: '/personal/dashboard', icon: '📊' },
-  { label: 'Alunos', path: '/personal/alunos', icon: '👥' },
-  { label: 'Treinos', path: '/personal/treinos', icon: '💪' },
-  { label: 'Dietas', path: '/personal/dietas', icon: '🥗' },
-  { label: 'Mensagens', path: '/personal/mensagens', icon: '💬' },
-  { label: 'Financeiro', path: '/personal/financeiro', icon: '💰' },
+  { label: 'Dashboard', path: '/personal/dashboard', icon: faChartLine },
+  { label: 'Alunos', path: '/personal/alunos', icon: faUsers },
+  { label: 'Treinos', path: '/personal/treinos', icon: faDumbbell },
+  { label: 'Dietas', path: '/personal/dietas', icon: faUtensils },
+  { label: 'Mensagens', path: '/personal/mensagens', icon: faComments },
+  { label: 'Financeiro', path: '/personal/financeiro', icon: faDollarSign },
 ]
 
 const alunoMenuItems = [
-  { label: 'Meu Dia', path: '/aluno/home', icon: '🏠' },
-  { label: 'Treino', path: '/aluno/treino', icon: '💪' },
-  { label: 'Dieta', path: '/aluno/dieta', icon: '🥗' },
-  { label: 'Suplementos', path: '/aluno/suplementos', icon: '💊' },
-  { label: 'Progresso', path: '/aluno/progresso', icon: '📈' },
-  { label: 'Chat', path: '/aluno/chat', icon: '💬' },
+  { label: 'Meu Dia', path: '/aluno/home', icon: faHome },
+  { label: 'Treino', path: '/aluno/treino', icon: faDumbbell },
+  { label: 'Dieta', path: '/aluno/dieta', icon: faUtensils },
+  { label: 'Suplementos', path: '/aluno/suplementos', icon: faPills },
+  { label: 'Progresso', path: '/aluno/progresso', icon: faChartBar },
+  { label: 'Chat', path: '/aluno/chat', icon: faComments },
 ]
 
 export default function Sidebar({ userType, isOpen }) {
@@ -35,7 +47,9 @@ export default function Sidebar({ userType, isOpen }) {
               href={item.path}
               className={`${styles.navItem} ${isActive ? styles.active : ''}`}
             >
-              <span className={styles.icon}>{item.icon}</span>
+              <span className={styles.icon}>
+                <FontAwesomeIcon icon={item.icon} />
+              </span>
               <span className={styles.label}>{item.label}</span>
             </Link>
           )

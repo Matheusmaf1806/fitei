@@ -1,16 +1,28 @@
 import { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faMugHot,
+  faDumbbell,
+  faUtensils,
+  faGlassWater,
+  faCookie,
+  faPills,
+  faPersonRunning,
+  faBowlFood,
+  faCheck
+} from '@fortawesome/free-solid-svg-icons'
 import styles from '../styles/MyDayBar.module.css'
 
 export default function MyDayBar() {
   const [tasks, setTasks] = useState([
-    { id: 1, label: 'Café da manhã', icon: '🍳', completed: true },
-    { id: 2, label: 'Treino matinal', icon: '💪', completed: true },
-    { id: 3, label: 'Almoço', icon: '🍽️', completed: false },
-    { id: 4, label: '2L de água', icon: '💧', completed: false },
-    { id: 5, label: 'Lanche', icon: '🥤', completed: false },
-    { id: 6, label: 'Suplemento pré-treino', icon: '💊', completed: false },
-    { id: 7, label: 'Treino tarde', icon: '🏋️', completed: false },
-    { id: 8, label: 'Jantar', icon: '🍲', completed: false },
+    { id: 1, label: 'Café da manhã', icon: faMugHot, completed: true },
+    { id: 2, label: 'Treino matinal', icon: faDumbbell, completed: true },
+    { id: 3, label: 'Almoço', icon: faUtensils, completed: false },
+    { id: 4, label: '2L de água', icon: faGlassWater, completed: false },
+    { id: 5, label: 'Lanche', icon: faCookie, completed: false },
+    { id: 6, label: 'Suplemento pré-treino', icon: faPills, completed: false },
+    { id: 7, label: 'Treino tarde', icon: faPersonRunning, completed: false },
+    { id: 8, label: 'Jantar', icon: faBowlFood, completed: false },
   ])
 
   const toggleTask = (id) => {
@@ -74,10 +86,12 @@ export default function MyDayBar() {
             className={`${styles.task} ${task.completed ? styles.completed : ''}`}
             onClick={() => toggleTask(task.id)}
           >
-            <span className={styles.icon}>{task.icon}</span>
+            <span className={styles.icon}>
+              <FontAwesomeIcon icon={task.icon} />
+            </span>
             <span className={styles.label}>{task.label}</span>
             <span className={styles.check}>
-              {task.completed ? '✓' : ''}
+              {task.completed && <FontAwesomeIcon icon={faCheck} />}
             </span>
           </button>
         ))}

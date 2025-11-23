@@ -1,10 +1,12 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDumbbell, faUtensils, faComment, faUserPlus } from '@fortawesome/free-solid-svg-icons'
 import styles from '../styles/QuickActions.module.css'
 
 const actions = [
-  { label: 'Novo Treino', icon: '💪', color: 'primary' },
-  { label: 'Nova Dieta', icon: '🥗', color: 'success' },
-  { label: 'Enviar Mensagem', icon: '💬', color: 'warning' },
-  { label: 'Adicionar Aluno', icon: '👤', color: 'info' },
+  { label: 'Novo Treino', icon: faDumbbell, color: 'primary' },
+  { label: 'Nova Dieta', icon: faUtensils, color: 'success' },
+  { label: 'Enviar Mensagem', icon: faComment, color: 'warning' },
+  { label: 'Adicionar Aluno', icon: faUserPlus, color: 'info' },
 ]
 
 export default function QuickActions() {
@@ -17,7 +19,9 @@ export default function QuickActions() {
             key={index}
             className={`${styles.action} ${styles[action.color]}`}
           >
-            <span className={styles.icon}>{action.icon}</span>
+            <span className={styles.icon}>
+              <FontAwesomeIcon icon={action.icon} />
+            </span>
             <span className={styles.label}>{action.label}</span>
           </button>
         ))}
