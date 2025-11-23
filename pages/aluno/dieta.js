@@ -1,4 +1,22 @@
 import { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faFire,
+  faDrumstickBite,
+  faWheatAwn,
+  faLeaf,
+  faCamera,
+  faFilePdf,
+  faComments,
+  faCheck,
+  faMugHot,
+  faCoffee,
+  faUtensils,
+  faSeedling,
+  faBolt,
+  faBowlFood,
+  faGlassWater
+} from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import styles from '../../styles/AlunoDieta.module.css'
 
@@ -7,7 +25,7 @@ const initialMeals = [
     id: 1,
     name: 'Café da Manhã',
     time: '07:00',
-    icon: '🍳',
+    icon: faMugHot,
     completed: true,
     items: [
       '3 ovos mexidos',
@@ -21,7 +39,7 @@ const initialMeals = [
     id: 2,
     name: 'Lanche da Manhã',
     time: '10:00',
-    icon: '🥤',
+    icon: faCoffee,
     completed: true,
     items: [
       'Whey protein 30g',
@@ -33,7 +51,7 @@ const initialMeals = [
     id: 3,
     name: 'Almoço',
     time: '12:30',
-    icon: '🍽️',
+    icon: faUtensils,
     completed: false,
     items: [
       '150g Frango grelhado',
@@ -47,7 +65,7 @@ const initialMeals = [
     id: 4,
     name: 'Lanche da Tarde',
     time: '15:30',
-    icon: '🥜',
+    icon: faSeedling,
     completed: false,
     items: [
       '30g Pasta de amendoim',
@@ -59,7 +77,7 @@ const initialMeals = [
     id: 5,
     name: 'Pré-Treino',
     time: '17:30',
-    icon: '⚡',
+    icon: faBolt,
     completed: false,
     items: [
       '1 banana',
@@ -71,7 +89,7 @@ const initialMeals = [
     id: 6,
     name: 'Jantar',
     time: '20:00',
-    icon: '🍲',
+    icon: faBowlFood,
     completed: false,
     items: [
       '150g Salmão',
@@ -84,7 +102,7 @@ const initialMeals = [
     id: 7,
     name: 'Ceia',
     time: '22:30',
-    icon: '🥛',
+    icon: faGlassWater,
     completed: false,
     items: [
       '200g Iogurte grego',
@@ -171,7 +189,9 @@ export default function AlunoDieta() {
           <div className={styles.macros}>
             <div className={styles.macroCard}>
               <div className={styles.macroHeader}>
-                <span className={styles.macroIcon}>🔥</span>
+                <span className={styles.macroIcon}>
+                  <FontAwesomeIcon icon={faFire} />
+                </span>
                 <span className={styles.macroName}>Calorias</span>
               </div>
               <div className={styles.macroValue}>{consumedMacros.calories}</div>
@@ -186,7 +206,9 @@ export default function AlunoDieta() {
 
             <div className={styles.macroCard}>
               <div className={styles.macroHeader}>
-                <span className={styles.macroIcon}>🥩</span>
+                <span className={styles.macroIcon}>
+                  <FontAwesomeIcon icon={faDrumstickBite} />
+                </span>
                 <span className={styles.macroName}>Proteína</span>
               </div>
               <div className={styles.macroValue}>{consumedMacros.protein}g</div>
@@ -201,7 +223,9 @@ export default function AlunoDieta() {
 
             <div className={styles.macroCard}>
               <div className={styles.macroHeader}>
-                <span className={styles.macroIcon}>🌾</span>
+                <span className={styles.macroIcon}>
+                  <FontAwesomeIcon icon={faWheatAwn} />
+                </span>
                 <span className={styles.macroName}>Carboidratos</span>
               </div>
               <div className={styles.macroValue}>{consumedMacros.carbs}g</div>
@@ -216,7 +240,9 @@ export default function AlunoDieta() {
 
             <div className={styles.macroCard}>
               <div className={styles.macroHeader}>
-                <span className={styles.macroIcon}>🥑</span>
+                <span className={styles.macroIcon}>
+                  <FontAwesomeIcon icon={faLeaf} />
+                </span>
                 <span className={styles.macroName}>Gorduras</span>
               </div>
               <div className={styles.macroValue}>{consumedMacros.fat}g</div>
@@ -239,7 +265,9 @@ export default function AlunoDieta() {
             >
               <div className={styles.mealHeader}>
                 <div className={styles.mealInfo}>
-                  <span className={styles.mealIcon}>{meal.icon}</span>
+                  <span className={styles.mealIcon}>
+                    <FontAwesomeIcon icon={meal.icon} />
+                  </span>
                   <div>
                     <div className={styles.mealName}>{meal.name}</div>
                     <div className={styles.mealTime}>{meal.time}</div>
@@ -249,7 +277,11 @@ export default function AlunoDieta() {
                   className={styles.checkBtn}
                   onClick={() => toggleMeal(meal.id)}
                 >
-                  {meal.completed ? '✓ Feito' : 'Marcar'}
+                  {meal.completed ? (
+                    <>
+                      <FontAwesomeIcon icon={faCheck} /> Feito
+                    </>
+                  ) : 'Marcar'}
                 </button>
               </div>
 
@@ -279,13 +311,13 @@ export default function AlunoDieta() {
 
         <div className={styles.actions}>
           <button className={styles.actionBtn}>
-            📸 Enviar foto da refeição
+            <FontAwesomeIcon icon={faCamera} /> Enviar foto da refeição
           </button>
           <button className={styles.actionBtn}>
-            📄 Ver plano completo (PDF)
+            <FontAwesomeIcon icon={faFilePdf} /> Ver plano completo (PDF)
           </button>
           <button className={styles.actionBtn}>
-            💬 Falar com personal
+            <FontAwesomeIcon icon={faComments} /> Falar com personal
           </button>
         </div>
       </div>

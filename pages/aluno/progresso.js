@@ -1,4 +1,15 @@
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faScaleBalanced,
+  faDumbbell,
+  faChartBar,
+  faFire,
+  faCamera,
+  faExpand,
+  faPersonRunning,
+  faUser
+} from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import styles from '../../styles/AlunoProgresso.module.css'
 
@@ -20,9 +31,9 @@ const strengthData = [
 ]
 
 const photos = [
-  { id: 1, date: 'Jan 2024', emoji: '📷', type: 'before' },
-  { id: 2, date: 'Mar 2024', emoji: '📷', type: 'progress' },
-  { id: 3, date: 'Jun 2024', emoji: '📷', type: 'current' },
+  { id: 1, date: 'Jan 2024', icon: faCamera, type: 'before' },
+  { id: 2, date: 'Mar 2024', icon: faCamera, type: 'progress' },
+  { id: 3, date: 'Jun 2024', icon: faCamera, type: 'current' },
 ]
 
 export default function AlunoProgresso() {
@@ -36,7 +47,9 @@ export default function AlunoProgresso() {
 
         <div className={styles.stats}>
           <div className={styles.statCard}>
-            <div className={styles.statIcon}>⚖️</div>
+            <div className={styles.statIcon}>
+              <FontAwesomeIcon icon={faScaleBalanced} />
+            </div>
             <div>
               <div className={styles.statValue}>-6.5kg</div>
               <div className={styles.statLabel}>Peso perdido</div>
@@ -44,7 +57,9 @@ export default function AlunoProgresso() {
             </div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statIcon}>💪</div>
+            <div className={styles.statIcon}>
+              <FontAwesomeIcon icon={faDumbbell} />
+            </div>
             <div>
               <div className={styles.statValue}>+25kg</div>
               <div className={styles.statLabel}>Força no supino</div>
@@ -52,7 +67,9 @@ export default function AlunoProgresso() {
             </div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statIcon}>📊</div>
+            <div className={styles.statIcon}>
+              <FontAwesomeIcon icon={faChartBar} />
+            </div>
             <div>
               <div className={styles.statValue}>87%</div>
               <div className={styles.statLabel}>Adesão média</div>
@@ -60,7 +77,9 @@ export default function AlunoProgresso() {
             </div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statIcon}>🔥</div>
+            <div className={styles.statIcon}>
+              <FontAwesomeIcon icon={faFire} />
+            </div>
             <div>
               <div className={styles.statValue}>72</div>
               <div className={styles.statLabel}>Treinos realizados</div>
@@ -149,7 +168,9 @@ export default function AlunoProgresso() {
             {photos.map(photo => (
               <div key={photo.id} className={styles.photo}>
                 <div className={styles.photoPlaceholder}>
-                  <span className={styles.photoEmoji}>{photo.emoji}</span>
+                  <span className={styles.photoEmoji}>
+                    <FontAwesomeIcon icon={photo.icon} />
+                  </span>
                   <span className={styles.photoLabel}>{photo.type}</span>
                 </div>
                 <div className={styles.photoDate}>{photo.date}</div>
@@ -162,25 +183,33 @@ export default function AlunoProgresso() {
           <h3 className={styles.measurementsTitle}>Medidas Corporais</h3>
           <div className={styles.measurementGrid}>
             <div className={styles.measurement}>
-              <div className={styles.measurementIcon}>💪</div>
+              <div className={styles.measurementIcon}>
+                <FontAwesomeIcon icon={faDumbbell} />
+              </div>
               <div className={styles.measurementName}>Braço</div>
               <div className={styles.measurementValue}>38cm</div>
               <div className={styles.measurementChange}>+2cm</div>
             </div>
             <div className={styles.measurement}>
-              <div className={styles.measurementIcon}>🫁</div>
+              <div className={styles.measurementIcon}>
+                <FontAwesomeIcon icon={faExpand} />
+              </div>
               <div className={styles.measurementName}>Peitoral</div>
               <div className={styles.measurementValue}>105cm</div>
               <div className={styles.measurementChange}>+3cm</div>
             </div>
             <div className={styles.measurement}>
-              <div className={styles.measurementIcon}>🦵</div>
+              <div className={styles.measurementIcon}>
+                <FontAwesomeIcon icon={faPersonRunning} />
+              </div>
               <div className={styles.measurementName}>Coxa</div>
               <div className={styles.measurementValue}>60cm</div>
               <div className={styles.measurementChange}>+4cm</div>
             </div>
             <div className={styles.measurement}>
-              <div className={styles.measurementIcon}>🤸</div>
+              <div className={styles.measurementIcon}>
+                <FontAwesomeIcon icon={faUser} />
+              </div>
               <div className={styles.measurementName}>Cintura</div>
               <div className={styles.measurementValue}>85cm</div>
               <div className={styles.measurementChange}>-8cm</div>

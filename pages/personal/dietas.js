@@ -1,3 +1,20 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faDumbbell,
+  faFire,
+  faScaleBalanced,
+  faDrumstickBite,
+  faClipboard,
+  faUsers,
+  faChartBar,
+  faUtensils,
+  faPen,
+  faCopy,
+  faPaperPlane,
+  faCalculator,
+  faMobileAlt,
+  faFilePdf
+} from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import styles from '../../styles/PersonalDietas.module.css'
 
@@ -11,7 +28,7 @@ const dietTemplates = [
     fat: 80,
     meals: 6,
     students: 12,
-    icon: '💪'
+    icon: faDumbbell
   },
   {
     id: 2,
@@ -22,7 +39,7 @@ const dietTemplates = [
     fat: 60,
     meals: 5,
     students: 8,
-    icon: '🔥'
+    icon: faFire
   },
   {
     id: 3,
@@ -33,7 +50,7 @@ const dietTemplates = [
     fat: 70,
     meals: 5,
     students: 6,
-    icon: '⚖️'
+    icon: faScaleBalanced
   },
   {
     id: 4,
@@ -44,7 +61,7 @@ const dietTemplates = [
     fat: 110,
     meals: 4,
     students: 4,
-    icon: '🥩'
+    icon: faDrumstickBite
   },
 ]
 
@@ -64,14 +81,18 @@ export default function PersonalDietas() {
 
         <div className={styles.stats}>
           <div className={styles.statCard}>
-            <span className={styles.statIcon}>📋</span>
+            <span className={styles.statIcon}>
+              <FontAwesomeIcon icon={faClipboard} />
+            </span>
             <div>
               <div className={styles.statValue}>{dietTemplates.length}</div>
               <div className={styles.statLabel}>Dietas criadas</div>
             </div>
           </div>
           <div className={styles.statCard}>
-            <span className={styles.statIcon}>👥</span>
+            <span className={styles.statIcon}>
+              <FontAwesomeIcon icon={faUsers} />
+            </span>
             <div>
               <div className={styles.statValue}>
                 {dietTemplates.reduce((acc, d) => acc + d.students, 0)}
@@ -80,7 +101,9 @@ export default function PersonalDietas() {
             </div>
           </div>
           <div className={styles.statCard}>
-            <span className={styles.statIcon}>📊</span>
+            <span className={styles.statIcon}>
+              <FontAwesomeIcon icon={faChartBar} />
+            </span>
             <div>
               <div className={styles.statValue}>85%</div>
               <div className={styles.statLabel}>Adesão média</div>
@@ -92,7 +115,9 @@ export default function PersonalDietas() {
           {dietTemplates.map(diet => (
             <div key={diet.id} className={styles.card}>
               <div className={styles.cardHeader}>
-                <span className={styles.cardIcon}>{diet.icon}</span>
+                <span className={styles.cardIcon}>
+                  <FontAwesomeIcon icon={diet.icon} />
+                </span>
                 <span className={styles.caloriesBadge}>{diet.calories} kcal</span>
               </div>
 
@@ -115,19 +140,29 @@ export default function PersonalDietas() {
 
               <div className={styles.cardInfo}>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoIcon}>🍽️</span>
+                  <span className={styles.infoIcon}>
+                    <FontAwesomeIcon icon={faUtensils} />
+                  </span>
                   <span>{diet.meals} refeições</span>
                 </div>
                 <div className={styles.infoItem}>
-                  <span className={styles.infoIcon}>👥</span>
+                  <span className={styles.infoIcon}>
+                    <FontAwesomeIcon icon={faUsers} />
+                  </span>
                   <span>{diet.students} alunos</span>
                 </div>
               </div>
 
               <div className={styles.cardActions}>
-                <button className={styles.actionBtn}>✏️ Editar</button>
-                <button className={styles.actionBtn}>📋 Duplicar</button>
-                <button className={styles.actionBtn}>📤 Enviar</button>
+                <button className={styles.actionBtn}>
+                  <FontAwesomeIcon icon={faPen} /> Editar
+                </button>
+                <button className={styles.actionBtn}>
+                  <FontAwesomeIcon icon={faCopy} /> Duplicar
+                </button>
+                <button className={styles.actionBtn}>
+                  <FontAwesomeIcon icon={faPaperPlane} /> Enviar
+                </button>
               </div>
             </div>
           ))}
@@ -137,21 +172,27 @@ export default function PersonalDietas() {
           <h3 className={styles.toolsTitle}>Ferramentas Rápidas</h3>
           <div className={styles.toolsGrid}>
             <div className={styles.tool}>
-              <span className={styles.toolIcon}>🧮</span>
+              <span className={styles.toolIcon}>
+                <FontAwesomeIcon icon={faCalculator} />
+              </span>
               <div className={styles.toolInfo}>
                 <div className={styles.toolName}>Calculadora de Macros</div>
                 <div className={styles.toolDesc}>Calcule necessidades calóricas</div>
               </div>
             </div>
             <div className={styles.tool}>
-              <span className={styles.toolIcon}>📱</span>
+              <span className={styles.toolIcon}>
+                <FontAwesomeIcon icon={faMobileAlt} />
+              </span>
               <div className={styles.toolInfo}>
                 <div className={styles.toolName}>Envio via WhatsApp</div>
                 <div className={styles.toolDesc}>Envie dietas automaticamente</div>
               </div>
             </div>
             <div className={styles.tool}>
-              <span className={styles.toolIcon}>📄</span>
+              <span className={styles.toolIcon}>
+                <FontAwesomeIcon icon={faFilePdf} />
+              </span>
               <div className={styles.toolInfo}>
                 <div className={styles.toolName}>Gerar PDF</div>
                 <div className={styles.toolDesc}>Crie PDFs profissionais</div>

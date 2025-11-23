@@ -1,4 +1,12 @@
 import { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faUser,
+  faDumbbell,
+  faClock,
+  faChartBar,
+  faComments
+} from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import styles from '../../styles/PersonalAlunos.module.css'
 
@@ -6,7 +14,7 @@ const mockStudents = [
   {
     id: 1,
     name: 'João Silva',
-    avatar: '👨',
+    avatar: faUser,
     adherence: 95,
     workouts: 15,
     status: 'active',
@@ -16,7 +24,7 @@ const mockStudents = [
   {
     id: 2,
     name: 'Maria Santos',
-    avatar: '👩',
+    avatar: faUser,
     adherence: 92,
     workouts: 14,
     status: 'active',
@@ -26,7 +34,7 @@ const mockStudents = [
   {
     id: 3,
     name: 'Pedro Oliveira',
-    avatar: '👨‍🦱',
+    avatar: faUser,
     adherence: 88,
     workouts: 13,
     status: 'active',
@@ -36,7 +44,7 @@ const mockStudents = [
   {
     id: 4,
     name: 'Ana Costa',
-    avatar: '👩‍🦰',
+    avatar: faUser,
     adherence: 85,
     workouts: 12,
     status: 'active',
@@ -46,7 +54,7 @@ const mockStudents = [
   {
     id: 5,
     name: 'Carlos Souza',
-    avatar: '🧔',
+    avatar: faUser,
     adherence: 65,
     workouts: 8,
     status: 'warning',
@@ -56,7 +64,7 @@ const mockStudents = [
   {
     id: 6,
     name: 'Juliana Lima',
-    avatar: '👱‍♀️',
+    avatar: faUser,
     adherence: 45,
     workouts: 5,
     status: 'inactive',
@@ -139,7 +147,9 @@ export default function PersonalAlunos() {
           {filteredStudents.map(student => (
             <div key={student.id} className={`${styles.studentCard} ${styles[student.status]}`}>
               <div className={styles.studentHeader}>
-                <span className={styles.avatar}>{student.avatar}</span>
+                <span className={styles.avatar}>
+                  <FontAwesomeIcon icon={student.avatar} />
+                </span>
                 <div className={styles.studentInfo}>
                   <div className={styles.studentName}>{student.name}</div>
                   <div className={styles.studentPlan}>{student.plan}</div>
@@ -151,14 +161,18 @@ export default function PersonalAlunos() {
 
               <div className={styles.studentStats}>
                 <div className={styles.studentStat}>
-                  <span className={styles.statIcon}>💪</span>
+                  <span className={styles.statIcon}>
+                    <FontAwesomeIcon icon={faDumbbell} />
+                  </span>
                   <div>
                     <div className={styles.statNumber}>{student.workouts}</div>
                     <div className={styles.statText}>Treinos</div>
                   </div>
                 </div>
                 <div className={styles.studentStat}>
-                  <span className={styles.statIcon}>⏱️</span>
+                  <span className={styles.statIcon}>
+                    <FontAwesomeIcon icon={faClock} />
+                  </span>
                   <div>
                     <div className={styles.statNumber}>{student.lastActivity}</div>
                     <div className={styles.statText}>Última atividade</div>
@@ -175,10 +189,10 @@ export default function PersonalAlunos() {
 
               <div className={styles.studentActions}>
                 <button className={styles.actionBtn}>
-                  📊 Ver Detalhes
+                  <FontAwesomeIcon icon={faChartBar} /> Ver Detalhes
                 </button>
                 <button className={styles.actionBtn}>
-                  💬 Mensagem
+                  <FontAwesomeIcon icon={faComments} /> Mensagem
                 </button>
               </div>
             </div>

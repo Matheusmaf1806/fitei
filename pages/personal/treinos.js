@@ -1,3 +1,15 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faDumbbell,
+  faFire,
+  faBolt,
+  faPersonRunning,
+  faList,
+  faUsers,
+  faPen,
+  faCopy,
+  faPersonSwimming
+} from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import styles from '../../styles/PersonalTreinos.module.css'
 
@@ -8,7 +20,7 @@ const workoutTemplates = [
     type: 'Musculação',
     exercises: 15,
     students: 8,
-    icon: '💪'
+    icon: faDumbbell
   },
   {
     id: 2,
@@ -16,7 +28,7 @@ const workoutTemplates = [
     type: 'Musculação',
     exercises: 12,
     students: 5,
-    icon: '🔥'
+    icon: faFire
   },
   {
     id: 3,
@@ -24,7 +36,7 @@ const workoutTemplates = [
     type: 'HIIT',
     exercises: 8,
     students: 10,
-    icon: '⚡'
+    icon: faBolt
   },
   {
     id: 4,
@@ -32,7 +44,7 @@ const workoutTemplates = [
     type: 'Corrida',
     exercises: 6,
     students: 3,
-    icon: '🏃'
+    icon: faPersonRunning
   },
 ]
 
@@ -72,24 +84,36 @@ export default function PersonalTreinos() {
           {workoutTemplates.map(template => (
             <div key={template.id} className={styles.card}>
               <div className={styles.cardHeader}>
-                <span className={styles.cardIcon}>{template.icon}</span>
+                <span className={styles.cardIcon}>
+                  <FontAwesomeIcon icon={template.icon} />
+                </span>
                 <span className={styles.cardType}>{template.type}</span>
               </div>
               <h3 className={styles.cardTitle}>{template.name}</h3>
               <div className={styles.cardStats}>
                 <div className={styles.cardStat}>
-                  <span className={styles.statIcon}>📝</span>
+                  <span className={styles.statIcon}>
+                    <FontAwesomeIcon icon={faList} />
+                  </span>
                   <span>{template.exercises} exercícios</span>
                 </div>
                 <div className={styles.cardStat}>
-                  <span className={styles.statIcon}>👥</span>
+                  <span className={styles.statIcon}>
+                    <FontAwesomeIcon icon={faUsers} />
+                  </span>
                   <span>{template.students} alunos</span>
                 </div>
               </div>
               <div className={styles.cardActions}>
-                <button className={styles.actionBtn}>✏️ Editar</button>
-                <button className={styles.actionBtn}>📋 Duplicar</button>
-                <button className={styles.actionBtn}>👥 Atribuir</button>
+                <button className={styles.actionBtn}>
+                  <FontAwesomeIcon icon={faPen} /> Editar
+                </button>
+                <button className={styles.actionBtn}>
+                  <FontAwesomeIcon icon={faCopy} /> Duplicar
+                </button>
+                <button className={styles.actionBtn}>
+                  <FontAwesomeIcon icon={faUsers} /> Atribuir
+                </button>
               </div>
             </div>
           ))}
@@ -99,23 +123,33 @@ export default function PersonalTreinos() {
           <h3 className={styles.quickTitle}>Criação Rápida</h3>
           <div className={styles.quickGrid}>
             <div className={styles.quickCard}>
-              <span className={styles.quickIcon}>💪</span>
+              <span className={styles.quickIcon}>
+                <FontAwesomeIcon icon={faDumbbell} />
+              </span>
               <span className={styles.quickLabel}>Musculação</span>
             </div>
             <div className={styles.quickCard}>
-              <span className={styles.quickIcon}>🏃</span>
+              <span className={styles.quickIcon}>
+                <FontAwesomeIcon icon={faPersonRunning} />
+              </span>
               <span className={styles.quickLabel}>Corrida</span>
             </div>
             <div className={styles.quickCard}>
-              <span className={styles.quickIcon}>🏊</span>
+              <span className={styles.quickIcon}>
+                <FontAwesomeIcon icon={faPersonSwimming} />
+              </span>
               <span className={styles.quickLabel}>Natação</span>
             </div>
             <div className={styles.quickCard}>
-              <span className={styles.quickIcon}>🤸</span>
+              <span className={styles.quickIcon}>
+                <FontAwesomeIcon icon={faPersonRunning} />
+              </span>
               <span className={styles.quickLabel}>Funcional</span>
             </div>
             <div className={styles.quickCard}>
-              <span className={styles.quickIcon}>⚡</span>
+              <span className={styles.quickIcon}>
+                <FontAwesomeIcon icon={faBolt} />
+              </span>
               <span className={styles.quickLabel}>HIIT</span>
             </div>
           </div>

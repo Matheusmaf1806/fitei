@@ -1,4 +1,20 @@
 import { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faGlassWater,
+  faPills,
+  faBolt,
+  faFish,
+  faSun,
+  faFire,
+  faClock,
+  faCheck,
+  faTriangleExclamation,
+  faShoppingCart,
+  faChartBar,
+  faLightbulb,
+  faDroplet
+} from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import styles from '../../styles/AlunoSuplemento.module.css'
 
@@ -6,7 +22,7 @@ const initialSupplements = [
   {
     id: 1,
     name: 'Whey Protein',
-    icon: '🥤',
+    icon: faGlassWater,
     times: ['08:00', '15:30', '21:00'],
     completed: [true, false, false],
     dosage: '30g',
@@ -15,7 +31,7 @@ const initialSupplements = [
   {
     id: 2,
     name: 'Creatina',
-    icon: '💊',
+    icon: faPills,
     times: ['08:00'],
     completed: [true],
     dosage: '5g',
@@ -24,7 +40,7 @@ const initialSupplements = [
   {
     id: 3,
     name: 'BCAA',
-    icon: '⚡',
+    icon: faBolt,
     times: ['07:00', '17:30'],
     completed: [true, false],
     dosage: '5g',
@@ -33,7 +49,7 @@ const initialSupplements = [
   {
     id: 4,
     name: 'Ômega 3',
-    icon: '🐟',
+    icon: faFish,
     times: ['12:30'],
     completed: [false],
     dosage: '1 cápsula',
@@ -42,7 +58,7 @@ const initialSupplements = [
   {
     id: 5,
     name: 'Vitamina D',
-    icon: '☀️',
+    icon: faSun,
     times: ['08:00'],
     completed: [true],
     dosage: '2000 UI',
@@ -51,7 +67,7 @@ const initialSupplements = [
   {
     id: 6,
     name: 'Pré-Treino',
-    icon: '🔥',
+    icon: faFire,
     times: ['17:30'],
     completed: [false],
     dosage: '1 dose',
@@ -134,7 +150,9 @@ export default function AlunoSuplemento() {
             <div key={supplement.id} className={styles.supplement}>
               <div className={styles.supplementHeader}>
                 <div className={styles.supplementInfo}>
-                  <span className={styles.icon}>{supplement.icon}</span>
+                  <span className={styles.icon}>
+                    <FontAwesomeIcon icon={supplement.icon} />
+                  </span>
                   <div>
                     <div className={styles.supplementName}>{supplement.name}</div>
                     <div className={styles.supplementDosage}>{supplement.dosage}</div>
@@ -151,7 +169,11 @@ export default function AlunoSuplemento() {
                     />
                   </div>
                   <div className={styles.stockText}>
-                    {supplement.stock < 30 ? '⚠️ Acabando' : `${supplement.stock}%`}
+                    {supplement.stock < 30 ? (
+                      <>
+                        <FontAwesomeIcon icon={faTriangleExclamation} /> Acabando
+                      </>
+                    ) : `${supplement.stock}%`}
                   </div>
                 </div>
               </div>
@@ -163,10 +185,12 @@ export default function AlunoSuplemento() {
                     className={`${styles.timeBtn} ${supplement.completed[index] ? styles.completed : ''}`}
                     onClick={() => toggleSupplement(supplement.id, index)}
                   >
-                    <span className={styles.timeIcon}>⏰</span>
+                    <span className={styles.timeIcon}>
+                      <FontAwesomeIcon icon={faClock} />
+                    </span>
                     <span className={styles.timeText}>{time}</span>
                     <span className={styles.timeCheck}>
-                      {supplement.completed[index] ? '✓' : ''}
+                      {supplement.completed[index] && <FontAwesomeIcon icon={faCheck} />}
                     </span>
                   </button>
                 ))}
@@ -180,30 +204,38 @@ export default function AlunoSuplemento() {
             + Adicionar Suplemento
           </button>
           <button className={styles.actionBtn}>
-            🛒 Marcar como &quot;Acabando&quot;
+            <FontAwesomeIcon icon={faShoppingCart} /> Marcar como &quot;Acabando&quot;
           </button>
           <button className={styles.actionBtn}>
-            📊 Ver Histórico
+            <FontAwesomeIcon icon={faChartBar} /> Ver Histórico
           </button>
         </div>
 
         <div className={styles.tips}>
-          <h3 className={styles.tipsTitle}>💡 Dicas</h3>
+          <h3 className={styles.tipsTitle}>
+            <FontAwesomeIcon icon={faLightbulb} /> Dicas
+          </h3>
           <div className={styles.tipsList}>
             <div className={styles.tip}>
-              <span className={styles.tipIcon}>🥤</span>
+              <span className={styles.tipIcon}>
+                <FontAwesomeIcon icon={faGlassWater} />
+              </span>
               <div className={styles.tipText}>
                 Tome o Whey Protein até 30 minutos após o treino para melhor absorção
               </div>
             </div>
             <div className={styles.tip}>
-              <span className={styles.tipIcon}>💊</span>
+              <span className={styles.tipIcon}>
+                <FontAwesomeIcon icon={faPills} />
+              </span>
               <div className={styles.tipText}>
                 A creatina pode ser tomada a qualquer hora, mas mantenha a consistência
               </div>
             </div>
             <div className={styles.tip}>
-              <span className={styles.tipIcon}>💧</span>
+              <span className={styles.tipIcon}>
+                <FontAwesomeIcon icon={faDroplet} />
+              </span>
               <div className={styles.tipText}>
                 Sempre tome seus suplementos com bastante água
               </div>

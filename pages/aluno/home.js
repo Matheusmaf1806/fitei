@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHandPeace, faFire, faStar, faDumbbell, faHammer, faUtensils } from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import MyDayBar from '../../components/MyDayBar'
 import AdherenceChart from '../../components/AdherenceChart'
@@ -10,17 +12,23 @@ export default function AlunoHome() {
       <div className={styles.home}>
         <div className={styles.header}>
           <div>
-            <h1 className={styles.title}>Olá, João! 👋</h1>
+            <h1 className={styles.title}>
+              Olá, João! <FontAwesomeIcon icon={faHandPeace} />
+            </h1>
             <p className={styles.subtitle}>Hoje é dia de treinar! Vamos lá?</p>
           </div>
           <div className={styles.headerStats}>
             <div className={styles.stat}>
               <span className={styles.statLabel}>Sequência</span>
-              <span className={styles.statValue}>5 dias 🔥</span>
+              <span className={styles.statValue}>
+                5 dias <FontAwesomeIcon icon={faFire} />
+              </span>
             </div>
             <div className={styles.stat}>
               <span className={styles.statLabel}>Esta semana</span>
-              <span className={styles.statValue}>87% ⭐</span>
+              <span className={styles.statValue}>
+                87% <FontAwesomeIcon icon={faStar} />
+              </span>
             </div>
           </div>
         </div>
@@ -37,7 +45,9 @@ export default function AlunoHome() {
               <div className={styles.exercises}>
                 <div className={styles.exercise}>
                   <div className={styles.exerciseInfo}>
-                    <span className={styles.exerciseIcon}>🏋️</span>
+                    <span className={styles.exerciseIcon}>
+                      <FontAwesomeIcon icon={faDumbbell} />
+                    </span>
                     <div>
                       <div className={styles.exerciseName}>Supino Reto</div>
                       <div className={styles.exerciseDetails}>4x12 - 60kg</div>
@@ -47,7 +57,9 @@ export default function AlunoHome() {
                 </div>
                 <div className={styles.exercise}>
                   <div className={styles.exerciseInfo}>
-                    <span className={styles.exerciseIcon}>💪</span>
+                    <span className={styles.exerciseIcon}>
+                      <FontAwesomeIcon icon={faDumbbell} />
+                    </span>
                     <div>
                       <div className={styles.exerciseName}>Supino Inclinado</div>
                       <div className={styles.exerciseDetails}>4x12 - 50kg</div>
@@ -57,7 +69,9 @@ export default function AlunoHome() {
                 </div>
                 <div className={styles.exercise}>
                   <div className={styles.exerciseInfo}>
-                    <span className={styles.exerciseIcon}>🔨</span>
+                    <span className={styles.exerciseIcon}>
+                      <FontAwesomeIcon icon={faHammer} />
+                    </span>
                     <div>
                       <div className={styles.exerciseName}>Crucifixo</div>
                       <div className={styles.exerciseDetails}>3x15 - 30kg</div>
@@ -81,7 +95,9 @@ export default function AlunoHome() {
               <h3 className={styles.sectionTitle}>Próxima Refeição</h3>
               <div className={styles.meal}>
                 <div className={styles.mealTime}>
-                  <span className={styles.mealIcon}>🍽️</span>
+                  <span className={styles.mealIcon}>
+                    <FontAwesomeIcon icon={faUtensils} />
+                  </span>
                   <span className={styles.mealLabel}>Almoço - 12:30</span>
                 </div>
                 <div className={styles.mealItems}>
