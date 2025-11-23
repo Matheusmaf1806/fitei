@@ -1,0 +1,81 @@
+.container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid;
+  transition: all 0.3s ease;
+}
+
+.message:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message.motivation {
+  background: #fff3e0;
+  border-left-color: var(--warning);
+}
+
+.message.achievement {
+  background: #f3e5f5;
+  border-left-color: #9c27b0;
+}
+
+.message.tip {
+  background: #e3f2fd;
+  border-left-color: #2196f3;
+}
+
+.message.reminder {
+  background: #ffebee;
+  border-left-color: var(--primary);
+}
+
+.icon {
+  font-size: 24px;
+}
+
+.content {
+  flex: 1;
+}
+
+.messageTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.messageText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.messageTime {
+  font-size: 11px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}

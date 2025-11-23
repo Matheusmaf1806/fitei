@@ -1,0 +1,58 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 32px;
+}
+
+.comingSoon {
+  background: white;
+  border-radius: 12px;
+  padding: 80px 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.icon {
+  font-size: 80px;
+  margin-bottom: 24px;
+}
+
+.comingSoon h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+
+.comingSoon p {
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 24px;
+  }
+
+  .comingSoon {
+    padding: 60px 24px;
+  }
+
+  .icon {
+    font-size: 60px;
+  }
+
+  .comingSoon h2 {
+    font-size: 24px;
+  }
+
+  .comingSoon p {
+    font-size: 16px;
+  }
+}
