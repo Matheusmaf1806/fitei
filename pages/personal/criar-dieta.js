@@ -17,7 +17,10 @@ import {
   faFish,
   faCarrot,
   faCookie,
-  faCoffee
+  faCoffee,
+  faShoppingCart,
+  faCheck,
+  faClipboard
 } from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import styles from '../../styles/CriarDieta.module.css'
@@ -39,6 +42,8 @@ export default function CriarDieta() {
   const [currentMeal, setCurrentMeal] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [showShoppingList, setShowShoppingList] = useState(false)
+  const [checkedItems, setCheckedItems] = useState({})
 
   // Comprehensive food database with macronutrients per 100g
   const foodDatabase = {
@@ -300,6 +305,69 @@ export default function CriarDieta() {
     router.push('/personal/dietas')
   }
 
+  // Generate smart shopping list
+  const generateShoppingList = () => {
+    const allFoods = Object.values(selectedMeals).flat()
+
+    if (allFoods.length === 0) {
+      alert('Adicione alimentos à dieta antes de gerar a lista de compras!')
+      return
+    }
+
+    // Group and sum quantities by food name and category
+    const groupedFoods = {}
+
+    allFoods.forEach(food => {
+      if (!groupedFoods[food.category]) {
+        groupedFoods[food.category] = {}
+      }
+
+      if (!groupedFoods[food.category][food.name]) {
+        groupedFoods[food.category][food.name] = {
+          ...food,
+          totalPortion: 0
+        }
+      }
+
+      groupedFoods[food.category][food.name].totalPortion += food.portion
+    })
+
+    return groupedFoods
+  }
+
+  const handleGenerateShoppingList = () => {
+    setShowShoppingList(true)
+    setCheckedItems({})
+  }
+
+  const toggleItemCheck = (category, foodName) => {
+    const key = `${category}-${foodName}`
+    setCheckedItems({
+      ...checkedItems,
+      [key]: !checkedItems[key]
+    })
+  }
+
+  const copyShoppingListToClipboard = () => {
+    const shoppingList = generateShoppingList()
+    let text = `📋 LISTA DE COMPRAS - ${dietName || 'Dieta'}\n\n`
+
+    Object.entries(shoppingList).forEach(([category, foods]) => {
+      text += `\n📦 ${category}\n`
+      text += '─'.repeat(40) + '\n'
+      Object.entries(foods).forEach(([name, food]) => {
+        const checked = checkedItems[`${category}-${name}`]
+        text += `${checked ? '✓' : '☐'} ${name} - ${food.totalPortion.toFixed(0)}g\n`
+      })
+    })
+
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Lista de compras copiada para a área de transferência!')
+    }).catch(() => {
+      alert('Erro ao copiar. Tente novamente.')
+    })
+  }
+
   // Filter foods based on search and category
   const getFilteredFoods = () => {
     let allFoods = []
@@ -336,6 +404,10 @@ export default function CriarDieta() {
             <p>Monte uma dieta completa e personalizada para seu aluno</p>
           </div>
           <div className={styles.actions}>
+            <button className={styles.secondaryButton} onClick={handleGenerateShoppingList}>
+              <FontAwesomeIcon icon={faShoppingCart} />
+              Lista de Compras
+            </button>
             <button className={styles.saveButton} onClick={handleSaveDiet}>
               <FontAwesomeIcon icon={faSave} />
               Salvar Dieta
@@ -584,6 +656,72 @@ export default function CriarDieta() {
                   <p>Nenhum alimento encontrado</p>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showShoppingList && (
+        <div className={styles.modalOverlay} onClick={() => setShowShoppingList(false)}>
+          <div className={styles.shoppingListModal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <div>
+                <h2>
+                  <FontAwesomeIcon icon={faShoppingCart} /> Lista de Compras
+                </h2>
+                <p className={styles.modalSubtitle}>
+                  Organize suas compras por categoria e marque os itens adquiridos
+                </p>
+              </div>
+              <button className={styles.closeButton} onClick={() => setShowShoppingList(false)}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+
+            <div className={styles.shoppingListActions}>
+              <button className={styles.copyButton} onClick={copyShoppingListToClipboard}>
+                <FontAwesomeIcon icon={faClipboard} />
+                Copiar Lista
+              </button>
+            </div>
+
+            <div className={styles.shoppingListContent}>
+              {Object.entries(generateShoppingList() || {}).map(([category, foods]) => (
+                <div key={category} className={styles.shoppingCategory}>
+                  <div className={styles.categoryHeader}>
+                    <h3>{category}</h3>
+                    <span className={styles.categoryCount}>
+                      {Object.keys(foods).length} {Object.keys(foods).length === 1 ? 'item' : 'itens'}
+                    </span>
+                  </div>
+                  <div className={styles.categoryItems}>
+                    {Object.entries(foods).map(([name, food]) => {
+                      const itemKey = `${category}-${name}`
+                      const isChecked = checkedItems[itemKey]
+
+                      return (
+                        <div
+                          key={name}
+                          className={`${styles.shoppingItem} ${isChecked ? styles.checked : ''}`}
+                          onClick={() => toggleItemCheck(category, name)}
+                        >
+                          <div className={styles.checkbox}>
+                            {isChecked && <FontAwesomeIcon icon={faCheck} />}
+                          </div>
+                          <div className={styles.itemInfo}>
+                            <div className={styles.itemName}>{name}</div>
+                            <div className={styles.itemQuantity}>
+                              {food.totalPortion >= 1000
+                                ? `${(food.totalPortion / 1000).toFixed(2)} kg`
+                                : `${food.totalPortion.toFixed(0)} g`}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

@@ -394,7 +394,12 @@ export default function CriarTreino() {
           <div className={styles.modal} onClick={() => setShowExerciseModal(false)}>
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
               <div className={styles.modalHeader}>
-                <h2 className={styles.modalTitle}>Adicionar Exercício</h2>
+                <div>
+                  <h2 className={styles.modalTitle}>Adicionar Exercício</h2>
+                  <p className={styles.modalSubtitle}>
+                    Selecione um exercício da nossa biblioteca completa
+                  </p>
+                </div>
                 <button
                   className={styles.modalClose}
                   onClick={() => setShowExerciseModal(false)}
@@ -416,40 +421,68 @@ export default function CriarTreino() {
                   />
                 </div>
 
-                <select
-                  className={styles.muscleFilter}
-                  value={selectedMuscle}
-                  onChange={(e) => setSelectedMuscle(e.target.value)}
-                >
-                  <option value="all">Todos os Grupos</option>
+                <div className={styles.muscleFilters}>
+                  <button
+                    className={`${styles.muscleTab} ${selectedMuscle === 'all' ? styles.muscleTabActive : ''}`}
+                    onClick={() => setSelectedMuscle('all')}
+                  >
+                    Todos
+                  </button>
                   {Object.keys(exercisesDatabase).map(muscle => (
-                    <option key={muscle} value={muscle}>{muscle}</option>
+                    <button
+                      key={muscle}
+                      className={`${styles.muscleTab} ${selectedMuscle === muscle ? styles.muscleTabActive : ''}`}
+                      onClick={() => setSelectedMuscle(muscle)}
+                    >
+                      {muscle}
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
 
               <div className={styles.exerciseGrid}>
-                {filteredExercises.map((exercise, index) => (
-                  <div
-                    key={index}
-                    className={styles.exerciseOption}
-                    onClick={() => handleAddExercise(exercise)}
-                  >
-                    <div className={styles.optionName}>{exercise.name}</div>
-                    <div className={styles.optionMeta}>
-                      <span className={styles.optionBadge}>{exercise.muscle}</span>
-                      <span className={styles.optionEquipment}>{exercise.equipment}</span>
-                    </div>
-                    <div className={styles.optionDifficulty}>
-                      {exercise.difficulty}
-                    </div>
-                  </div>
-                ))}
-
-                {filteredExercises.length === 0 && (
+                {filteredExercises.length === 0 ? (
                   <div className={styles.noResults}>
-                    Nenhum exercício encontrado
+                    <FontAwesomeIcon icon={faSearch} className={styles.noResultsIcon} />
+                    <p>Nenhum exercício encontrado</p>
+                    <p className={styles.noResultsHint}>Tente ajustar os filtros ou busca</p>
                   </div>
+                ) : (
+                  filteredExercises.map((exercise, index) => {
+                    const difficultyColor =
+                      exercise.difficulty === 'Iniciante' ? 'success' :
+                      exercise.difficulty === 'Intermediário' ? 'warning' : 'danger'
+
+                    return (
+                      <div
+                        key={index}
+                        className={styles.exerciseOption}
+                        onClick={() => handleAddExercise(exercise)}
+                      >
+                        <div className={styles.optionHeader}>
+                          <div className={`${styles.difficultyBadge} ${styles[difficultyColor]}`}>
+                            {exercise.difficulty}
+                          </div>
+                        </div>
+                        <div className={styles.optionName}>{exercise.name}</div>
+                        <div className={styles.optionMeta}>
+                          <span className={styles.optionMuscle}>
+                            <FontAwesomeIcon icon={faDumbbell} />
+                            {exercise.muscle}
+                          </span>
+                          <span className={styles.optionEquipment}>
+                            {exercise.equipment}
+                          </span>
+                        </div>
+                        <div className={styles.optionFooter}>
+                          <span className={styles.optionAction}>
+                            <FontAwesomeIcon icon={faPlus} />
+                            Adicionar
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })
                 )}
               </div>
             </div>

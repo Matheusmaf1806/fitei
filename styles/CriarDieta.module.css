@@ -68,6 +68,28 @@
   box-shadow: 0 6px 20px rgba(229, 58, 37, 0.3);
 }
 
+.secondaryButton {
+  padding: 14px 32px;
+  background: white;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-lg);
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(229, 58, 37, 0.3);
+}
+
 .content {
   display: grid;
   grid-template-columns: 1fr 380px;
@@ -628,6 +650,171 @@
 .noResults p {
   font-size: 16px;
   color: var(--text-secondary);
+}
+
+/* Shopping List Modal */
+.shoppingListModal {
+  background: white;
+  border-radius: var(--radius-2xl);
+  width: 100%;
+  max-width: 800px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modalSubtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.shoppingListActions {
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--background);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.copyButton {
+  padding: 10px 20px;
+  background: white;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.copyButton:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.shoppingListContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+}
+
+.shoppingCategory {
+  margin-bottom: 32px;
+}
+
+.shoppingCategory:last-child {
+  margin-bottom: 0;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+}
+
+.categoryHeader h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.categoryCount {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--background-secondary);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.categoryItems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shoppingItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: white;
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.shoppingItem:hover {
+  border-color: var(--primary);
+  background: rgba(229, 58, 37, 0.02);
+}
+
+.shoppingItem.checked {
+  background: var(--background-secondary);
+  border-color: var(--border);
+  opacity: 0.6;
+}
+
+.shoppingItem.checked .itemName {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+
+.checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: white;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.shoppingItem:hover .checkbox {
+  border-color: var(--primary);
+}
+
+.shoppingItem.checked .checkbox {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.itemInfo {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.itemName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.itemQuantity {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(229, 58, 37, 0.1);
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
 }
 
 @keyframes fadeIn {
