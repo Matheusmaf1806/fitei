@@ -208,6 +208,26 @@ export default function CriarTreino() {
     router.push('/personal/treinos')
   }
 
+  // Calculate workout statistics
+  const calculateWorkoutStats = () => {
+    const totalSets = selectedExercises.reduce((sum, ex) => sum + (ex.sets || 0), 0)
+    const estimatedTime = selectedExercises.reduce((sum, ex) => {
+      const exerciseTime = (ex.sets || 0) * (ex.reps || 0) * 3 // 3 segundos por rep
+      const restTime = (ex.sets || 0) * (ex.rest || 60)
+      return sum + exerciseTime + restTime
+    }, 0)
+
+    // Count muscle groups
+    const muscleGroups = [...new Set(selectedExercises.map(ex => ex.muscle))]
+
+    return {
+      totalExercises: selectedExercises.length,
+      totalSets,
+      estimatedTime: Math.ceil(estimatedTime / 60), // Convert to minutes
+      muscleGroups
+    }
+  }
+
   const filteredExercises = Object.entries(exercisesDatabase)
     .filter(([muscle]) => selectedMuscle === 'all' || muscle === selectedMuscle)
     .flatMap(([muscle, exercises]) =>
@@ -218,13 +238,19 @@ export default function CriarTreino() {
         .map(ex => ({ ...ex, muscle }))
     )
 
+  const workoutStats = calculateWorkoutStats()
+
   return (
     <Layout userType="personal">
       <div className={styles.container}>
         <div className={styles.header}>
-          <div>
-            <h1 className={styles.title}>Criar Novo Treino</h1>
-            <p className={styles.subtitle}>Monte um treino completo para seus alunos</p>
+          <button className={styles.backButton} onClick={() => router.back()}>
+            <FontAwesomeIcon icon={faChevronDown} rotation={90} />
+            Voltar
+          </button>
+          <div className={styles.headerInfo}>
+            <h1>Criar Novo Treino</h1>
+            <p>Monte um treino personalizado com exercícios da nossa biblioteca</p>
           </div>
           <div className={styles.headerActions}>
             <button className={styles.btnSecondary} onClick={() => router.back()}>
@@ -293,98 +319,190 @@ export default function CriarTreino() {
                 <div className={styles.exercisesList}>
                   {selectedExercises.map((exercise, index) => (
                     <div key={exercise.id} className={styles.exerciseCard}>
-                      <div className={styles.exerciseHeader}>
-                        <div className={styles.exerciseNumber}>{index + 1}</div>
-                        <div className={styles.exerciseInfo}>
-                          <div className={styles.exerciseName}>{exercise.name}</div>
-                          <div className={styles.exerciseMeta}>
-                            {exercise.muscle} • {exercise.equipment}
+                      <div className={styles.dragHandle}>
+                        <FontAwesomeIcon icon={faGripVertical} />
+                        <FontAwesomeIcon icon={faGripVertical} />
+                      </div>
+
+                      <div className={styles.exerciseContent}>
+                        <div className={styles.exerciseHeader}>
+                          <div className={styles.exerciseNumberBadge}>{index + 1}</div>
+                          <div className={styles.exerciseInfo}>
+                            <div className={styles.exerciseName}>{exercise.name}</div>
+                            <div className={styles.exerciseMeta}>
+                              <span className={styles.muscleBadge}>
+                                <FontAwesomeIcon icon={faDumbbell} />
+                                {exercise.muscle}
+                              </span>
+                              <span className={styles.equipmentText}>
+                                {exercise.equipment}
+                              </span>
+                              <span className={styles.difficultyTextSmall}>
+                                {exercise.difficulty}
+                              </span>
+                            </div>
+                          </div>
+                          <div className={styles.exerciseActions}>
+                            <button
+                              className={styles.iconBtn}
+                              onClick={() => handleDuplicateExercise(exercise)}
+                              title="Duplicar"
+                            >
+                              <FontAwesomeIcon icon={faCopy} />
+                            </button>
+                            <button
+                              className={`${styles.iconBtn} ${styles.deleteBtn}`}
+                              onClick={() => handleRemoveExercise(exercise.id)}
+                              title="Remover"
+                            >
+                              <FontAwesomeIcon icon={faTimes} />
+                            </button>
                           </div>
                         </div>
-                        <div className={styles.exerciseActions}>
-                          <button
-                            className={styles.iconBtn}
-                            onClick={() => handleDuplicateExercise(exercise)}
-                            title="Duplicar"
-                          >
-                            <FontAwesomeIcon icon={faCopy} />
-                          </button>
-                          <button
-                            className={styles.iconBtn}
-                            onClick={() => handleRemoveExercise(exercise.id)}
-                            title="Remover"
-                          >
-                            <FontAwesomeIcon icon={faTimes} />
-                          </button>
-                        </div>
-                      </div>
 
-                      <div className={styles.exerciseParams}>
-                        <div className={styles.paramGroup}>
-                          <label className={styles.paramLabel}>Séries</label>
-                          <input
-                            type="number"
-                            className={styles.paramInput}
-                            value={exercise.sets}
-                            onChange={(e) =>
-                              handleUpdateExercise(exercise.id, 'sets', parseInt(e.target.value))
-                            }
-                            min="1"
-                          />
+                        <div className={styles.exerciseParams}>
+                          <div className={styles.paramGroup}>
+                            <label className={styles.paramLabel}>Séries</label>
+                            <input
+                              type="number"
+                              className={styles.paramInput}
+                              value={exercise.sets}
+                              onChange={(e) =>
+                                handleUpdateExercise(exercise.id, 'sets', parseInt(e.target.value))
+                              }
+                              min="1"
+                            />
+                          </div>
+                          <div className={styles.paramGroup}>
+                            <label className={styles.paramLabel}>Repetições</label>
+                            <input
+                              type="number"
+                              className={styles.paramInput}
+                              value={exercise.reps}
+                              onChange={(e) =>
+                                handleUpdateExercise(exercise.id, 'reps', parseInt(e.target.value))
+                              }
+                              min="1"
+                            />
+                          </div>
+                          <div className={styles.paramGroup}>
+                            <label className={styles.paramLabel}>Carga</label>
+                            <input
+                              type="text"
+                              className={styles.paramInput}
+                              placeholder="Ex: 60kg"
+                              value={exercise.weight}
+                              onChange={(e) =>
+                                handleUpdateExercise(exercise.id, 'weight', e.target.value)
+                              }
+                            />
+                          </div>
+                          <div className={styles.paramGroup}>
+                            <label className={styles.paramLabel}>Descanso (s)</label>
+                            <input
+                              type="number"
+                              className={styles.paramInput}
+                              value={exercise.rest}
+                              onChange={(e) =>
+                                handleUpdateExercise(exercise.id, 'rest', parseInt(e.target.value))
+                              }
+                              min="0"
+                            />
+                          </div>
                         </div>
-                        <div className={styles.paramGroup}>
-                          <label className={styles.paramLabel}>Repetições</label>
-                          <input
-                            type="number"
-                            className={styles.paramInput}
-                            value={exercise.reps}
-                            onChange={(e) =>
-                              handleUpdateExercise(exercise.id, 'reps', parseInt(e.target.value))
-                            }
-                            min="1"
-                          />
-                        </div>
-                        <div className={styles.paramGroup}>
-                          <label className={styles.paramLabel}>Carga</label>
+
+                        <div className={styles.notesGroup}>
+                          <label className={styles.notesLabel}>
+                            <FontAwesomeIcon icon={faDumbbell} />
+                            Observações
+                          </label>
                           <input
                             type="text"
-                            className={styles.paramInput}
-                            placeholder="Ex: 60kg"
-                            value={exercise.weight}
+                            className={styles.notesInput}
+                            placeholder="Ex: Fazer movimento controlado, foco na contração..."
+                            value={exercise.notes}
                             onChange={(e) =>
-                              handleUpdateExercise(exercise.id, 'weight', e.target.value)
+                              handleUpdateExercise(exercise.id, 'notes', e.target.value)
                             }
                           />
                         </div>
-                        <div className={styles.paramGroup}>
-                          <label className={styles.paramLabel}>Descanso (s)</label>
-                          <input
-                            type="number"
-                            className={styles.paramInput}
-                            value={exercise.rest}
-                            onChange={(e) =>
-                              handleUpdateExercise(exercise.id, 'rest', parseInt(e.target.value))
-                            }
-                            min="0"
-                          />
-                        </div>
-                      </div>
-
-                      <div className={styles.notesGroup}>
-                        <input
-                          type="text"
-                          className={styles.notesInput}
-                          placeholder="Observações (opcional)"
-                          value={exercise.notes}
-                          onChange={(e) =>
-                            handleUpdateExercise(exercise.id, 'notes', e.target.value)
-                          }
-                        />
                       </div>
                     </div>
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Sidebar com Estatísticas */}
+          <div className={styles.sidebar}>
+            <div className={styles.statsCard}>
+              <h3>Resumo do Treino</h3>
+              <div className={styles.statsList}>
+                <div className={styles.statItem}>
+                  <div className={styles.statIcon}>
+                    <FontAwesomeIcon icon={faDumbbell} />
+                  </div>
+                  <div className={styles.statInfo}>
+                    <span className={styles.statValue}>{workoutStats.totalExercises}</span>
+                    <span className={styles.statLabel}>Exercícios</span>
+                  </div>
+                </div>
+                <div className={styles.statItem}>
+                  <div className={styles.statIcon}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </div>
+                  <div className={styles.statInfo}>
+                    <span className={styles.statValue}>{workoutStats.totalSets}</span>
+                    <span className={styles.statLabel}>Séries totais</span>
+                  </div>
+                </div>
+                <div className={styles.statItem}>
+                  <div className={styles.statIcon}>
+                    <FontAwesomeIcon icon={faDumbbell} />
+                  </div>
+                  <div className={styles.statInfo}>
+                    <span className={styles.statValue}>{workoutStats.estimatedTime} min</span>
+                    <span className={styles.statLabel}>Tempo estimado</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {workoutStats.muscleGroups.length > 0 && (
+              <div className={styles.muscleGroupsCard}>
+                <h3>Grupos Musculares</h3>
+                <div className={styles.muscleGroupsList}>
+                  {workoutStats.muscleGroups.map(muscle => (
+                    <div key={muscle} className={styles.muscleGroupBadge}>
+                      <FontAwesomeIcon icon={faDumbbell} />
+                      {muscle}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className={styles.tipsCard}>
+              <h3>Dicas para um Bom Treino</h3>
+              <ul>
+                <li>
+                  <FontAwesomeIcon icon={faCheck} />
+                  Varie exercícios para trabalhar diferentes ângulos
+                </li>
+                <li>
+                  <FontAwesomeIcon icon={faCheck} />
+                  Configure o descanso adequado entre séries
+                </li>
+                <li>
+                  <FontAwesomeIcon icon={faCheck} />
+                  Adicione progressão de carga ao longo das semanas
+                </li>
+                <li>
+                  <FontAwesomeIcon icon={faCheck} />
+                  Inclua aquecimento e alongamento
+                </li>
+              </ul>
             </div>
           </div>
         </div>
