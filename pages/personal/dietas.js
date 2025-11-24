@@ -66,6 +66,26 @@ const dietTemplates = [
 ]
 
 export default function PersonalDietas() {
+  const handleCreateDiet = () => {
+    alert('Funcionalidade de criar nova dieta será implementada em breve!')
+  }
+
+  const handleEditDiet = (dietName) => {
+    alert(`Editando dieta: ${dietName}`)
+  }
+
+  const handleDuplicateDiet = (dietName) => {
+    alert(`Duplicando dieta: ${dietName}`)
+  }
+
+  const handleSendDiet = (dietName) => {
+    alert(`Enviando dieta "${dietName}" para alunos`)
+  }
+
+  const handleToolClick = (toolName) => {
+    alert(`Abrindo ferramenta: ${toolName}`)
+  }
+
   return (
     <Layout userType="personal">
       <div className={styles.container}>
@@ -74,7 +94,7 @@ export default function PersonalDietas() {
             <h1 className={styles.title}>Biblioteca de Dietas</h1>
             <p className={styles.subtitle}>Crie e gerencie planos alimentares personalizados</p>
           </div>
-          <button className={styles.createBtn}>
+          <button className={styles.createBtn} onClick={handleCreateDiet}>
             + Criar Nova Dieta
           </button>
         </div>
@@ -154,13 +174,13 @@ export default function PersonalDietas() {
               </div>
 
               <div className={styles.cardActions}>
-                <button className={styles.actionBtn}>
+                <button className={styles.actionBtn} onClick={() => handleEditDiet(diet.name)}>
                   <FontAwesomeIcon icon={faPen} /> Editar
                 </button>
-                <button className={styles.actionBtn}>
+                <button className={styles.actionBtn} onClick={() => handleDuplicateDiet(diet.name)}>
                   <FontAwesomeIcon icon={faCopy} /> Duplicar
                 </button>
-                <button className={styles.actionBtn}>
+                <button className={styles.actionBtn} onClick={() => handleSendDiet(diet.name)}>
                   <FontAwesomeIcon icon={faPaperPlane} /> Enviar
                 </button>
               </div>
@@ -171,7 +191,11 @@ export default function PersonalDietas() {
         <div className={styles.tools}>
           <h3 className={styles.toolsTitle}>Ferramentas Rápidas</h3>
           <div className={styles.toolsGrid}>
-            <div className={styles.tool}>
+            <div
+              className={styles.tool}
+              onClick={() => handleToolClick('Calculadora de Macros')}
+              style={{ cursor: 'pointer' }}
+            >
               <span className={styles.toolIcon}>
                 <FontAwesomeIcon icon={faCalculator} />
               </span>
@@ -180,7 +204,11 @@ export default function PersonalDietas() {
                 <div className={styles.toolDesc}>Calcule necessidades calóricas</div>
               </div>
             </div>
-            <div className={styles.tool}>
+            <div
+              className={styles.tool}
+              onClick={() => handleToolClick('Envio via WhatsApp')}
+              style={{ cursor: 'pointer' }}
+            >
               <span className={styles.toolIcon}>
                 <FontAwesomeIcon icon={faMobileAlt} />
               </span>
@@ -189,7 +217,11 @@ export default function PersonalDietas() {
                 <div className={styles.toolDesc}>Envie dietas automaticamente</div>
               </div>
             </div>
-            <div className={styles.tool}>
+            <div
+              className={styles.tool}
+              onClick={() => handleToolClick('Gerar PDF')}
+              style={{ cursor: 'pointer' }}
+            >
               <span className={styles.toolIcon}>
                 <FontAwesomeIcon icon={faFilePdf} />
               </span>

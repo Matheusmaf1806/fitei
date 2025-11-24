@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHandPeace, faFire, faStar, faDumbbell, faHammer, faUtensils } from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
@@ -7,6 +9,23 @@ import MotivationalFeed from '../../components/MotivationalFeed'
 import styles from '../../styles/AlunoHome.module.css'
 
 export default function AlunoHome() {
+  const router = useRouter()
+  const [exerciseStatus, setExerciseStatus] = useState({})
+
+  const handleStartExercise = (exerciseName) => {
+    setExerciseStatus({ ...exerciseStatus, [exerciseName]: true })
+    alert(`Iniciando exercício: ${exerciseName}`)
+
+    // Simular conclusão após 2 segundos
+    setTimeout(() => {
+      setExerciseStatus({ ...exerciseStatus, [exerciseName]: false })
+    }, 2000)
+  }
+
+  const handleStartFullWorkout = () => {
+    router.push('/aluno/treino')
+  }
+
   return (
     <Layout userType="aluno">
       <div className={styles.home}>
@@ -53,7 +72,13 @@ export default function AlunoHome() {
                       <div className={styles.exerciseDetails}>4x12 - 60kg</div>
                     </div>
                   </div>
-                  <button className={styles.exerciseBtn}>Iniciar</button>
+                  <button
+                    className={styles.exerciseBtn}
+                    onClick={() => handleStartExercise('Supino Reto')}
+                    disabled={exerciseStatus['Supino Reto']}
+                  >
+                    {exerciseStatus['Supino Reto'] ? 'Em andamento...' : 'Iniciar'}
+                  </button>
                 </div>
                 <div className={styles.exercise}>
                   <div className={styles.exerciseInfo}>
@@ -65,7 +90,13 @@ export default function AlunoHome() {
                       <div className={styles.exerciseDetails}>4x12 - 50kg</div>
                     </div>
                   </div>
-                  <button className={styles.exerciseBtn}>Iniciar</button>
+                  <button
+                    className={styles.exerciseBtn}
+                    onClick={() => handleStartExercise('Supino Inclinado')}
+                    disabled={exerciseStatus['Supino Inclinado']}
+                  >
+                    {exerciseStatus['Supino Inclinado'] ? 'Em andamento...' : 'Iniciar'}
+                  </button>
                 </div>
                 <div className={styles.exercise}>
                   <div className={styles.exerciseInfo}>
@@ -77,10 +108,16 @@ export default function AlunoHome() {
                       <div className={styles.exerciseDetails}>3x15 - 30kg</div>
                     </div>
                   </div>
-                  <button className={styles.exerciseBtn}>Iniciar</button>
+                  <button
+                    className={styles.exerciseBtn}
+                    onClick={() => handleStartExercise('Crucifixo')}
+                    disabled={exerciseStatus['Crucifixo']}
+                  >
+                    {exerciseStatus['Crucifixo'] ? 'Em andamento...' : 'Iniciar'}
+                  </button>
                 </div>
               </div>
-              <button className={styles.startWorkoutBtn}>
+              <button className={styles.startWorkoutBtn} onClick={handleStartFullWorkout}>
                 Iniciar Treino Completo
               </button>
             </div>

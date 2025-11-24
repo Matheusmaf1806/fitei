@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faUser,
@@ -75,6 +76,7 @@ const mockStudents = [
 
 export default function PersonalAlunos() {
   const [filter, setFilter] = useState('all')
+  const router = useRouter()
 
   const filteredStudents = mockStudents.filter(student => {
     if (filter === 'all') return true
@@ -84,6 +86,18 @@ export default function PersonalAlunos() {
     return true
   })
 
+  const handleAddStudent = () => {
+    alert('Funcionalidade de adicionar novo aluno será implementada em breve!')
+  }
+
+  const handleViewDetails = (studentName) => {
+    alert(`Visualizando detalhes de: ${studentName}`)
+  }
+
+  const handleSendMessage = (studentName) => {
+    router.push('/personal/mensagens')
+  }
+
   return (
     <Layout userType="personal">
       <div className={styles.container}>
@@ -92,7 +106,7 @@ export default function PersonalAlunos() {
             <h1 className={styles.title}>Meus Alunos</h1>
             <p className={styles.subtitle}>Gerencie e acompanhe seus alunos</p>
           </div>
-          <button className={styles.addBtn}>
+          <button className={styles.addBtn} onClick={handleAddStudent}>
             + Adicionar Aluno
           </button>
         </div>
@@ -188,10 +202,16 @@ export default function PersonalAlunos() {
               </div>
 
               <div className={styles.studentActions}>
-                <button className={styles.actionBtn}>
+                <button
+                  className={styles.actionBtn}
+                  onClick={() => handleViewDetails(student.name)}
+                >
                   <FontAwesomeIcon icon={faChartBar} /> Ver Detalhes
                 </button>
-                <button className={styles.actionBtn}>
+                <button
+                  className={styles.actionBtn}
+                  onClick={() => handleSendMessage(student.name)}
+                >
                   <FontAwesomeIcon icon={faComments} /> Mensagem
                 </button>
               </div>
