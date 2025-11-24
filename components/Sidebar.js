@@ -91,8 +91,11 @@ export default function Sidebar({ userType, isOpen, onClose, isMobile }) {
 
         <div className={styles.sidebarFooter}>
           <div className={styles.footerBrand}>
-            <div className={styles.brandIcon}>F</div>
-            <span className={styles.brandText}>Fitei</span>
+            <img
+              src="https://image-xi-inky.vercel.app/public/tofitilogohorizontal.png"
+              alt="ToFiti Logo"
+              className={styles.footerLogo}
+            />
           </div>
           <div className={styles.footerVersion}>v1.0.0</div>
         </div>

@@ -39,12 +39,10 @@
   font-weight: 700;
 }
 
-.logoIcon {
-  font-size: 28px;
-}
-
-.logoText {
-  color: var(--primary);
+.logoImage {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
 }
 
 .right {
@@ -74,7 +72,7 @@
     padding: 0 16px;
   }
 
-  .logoText {
-    display: none;
+  .logoImage {
+    height: 32px;
   }
 }
