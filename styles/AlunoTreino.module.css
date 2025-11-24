@@ -1,144 +1,146 @@
+/* ===== TELA INICIAL ===== */
 .container {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
+  padding: 0 24px;
 }
 
 .header {
-  margin-bottom: 32px;
+  margin-bottom: 48px;
+  text-align: center;
 }
 
 .title {
-  font-size: 32px;
+  font-size: 48px;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  letter-spacing: -0.03em;
 }
 
 .subtitle {
-  font-size: 16px;
+  font-size: 18px;
   color: var(--text-secondary);
+  font-weight: 400;
 }
 
 .workouts {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: 32px;
+  margin-bottom: 64px;
 }
 
 .workout {
   background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.workout:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 .workout.active {
+  background: linear-gradient(135deg, #fff 0%, #fff5f4 100%);
   border: 2px solid var(--primary);
-  box-shadow: 0 4px 16px rgba(229, 58, 37, 0.2);
+  box-shadow: 0 4px 24px rgba(229, 58, 37, 0.15);
 }
 
 .workoutHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid var(--background-secondary);
+  align-items: flex-start;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.workoutInfo {
+  flex: 1;
 }
 
 .workoutName {
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
 }
 
 .todayBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: var(--primary);
   color: white;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(229, 58, 37, 0.3);
 }
 
-.progress {
-  text-align: right;
+.workoutProgress {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .progressText {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 8px;
-  display: block;
-}
-
-.progressBar {
-  width: 150px;
-  height: 8px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--primary-light));
-  border-radius: 4px;
-  transition: width 0.5s ease;
 }
 
 .exercises {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
 }
 
 .exercise {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  background: var(--background-secondary);
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  gap: 16px;
+  padding: 18px 20px;
+  background: rgba(249, 249, 249, 0.8);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .exercise:hover {
-  background: #e8e8e8;
-  transform: translateX(4px);
-}
-
-.exerciseInfo {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex: 1;
+  background: rgba(229, 58, 37, 0.04);
+  transform: translateX(8px);
 }
 
 .exerciseNumber {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   background: white;
-  border-radius: 50%;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
 }
 
-.exerciseDetails {
+.exerciseInfo {
   flex: 1;
 }
 
 .exerciseName {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 4px;
@@ -148,307 +150,575 @@
 }
 
 .videoIcon {
-  font-size: 14px;
+  color: var(--primary);
+  opacity: 0.7;
 }
 
 .exerciseSets {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.exerciseBtn {
-  background: var(--primary);
-  color: white;
-  padding: 8px 20px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.exerciseBtn:hover {
-  background: var(--primary-dark);
-  transform: translateY(-2px);
-}
-
-.startBtn {
-  width: 100%;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  padding: 16px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 700;
-  transition: all 0.3s ease;
-}
-
-.startBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(229, 58, 37, 0.4);
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.statCard {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  transition: all 0.3s ease;
-}
-
-.statCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-.statIcon {
-  font-size: 36px;
-}
-
-.statValue {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--primary);
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.statLabel {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-secondary);
   font-weight: 500;
 }
 
-/* Modal Styles */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+.startBtn {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  padding: 20px;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 20px;
+  gap: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(229, 58, 37, 0.25);
 }
 
-.modalContent {
+.startBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(229, 58, 37, 0.35);
+  background: var(--primary-dark);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+.statCard {
   background: white;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow: hidden;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
-  flex-direction: column;
-}
-
-.modalHeader {
-  padding: 24px;
-  border-bottom: 2px solid var(--background-secondary);
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.modalTitle {
-  font-size: 22px;
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.statIcon {
+  font-size: 40px;
+  color: var(--primary);
+  opacity: 0.9;
+}
+
+.statContent {
+  flex: 1;
+}
+
+.statValue {
+  font-size: 32px;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  line-height: 1;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
 }
 
-.modalSubtitle {
+.statLabel {
   font-size: 14px;
   color: var(--text-secondary);
+  font-weight: 500;
 }
 
-.timer {
+/* ===== TREINO ATIVO - TELA CHEIA ===== */
+.activeWorkout {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.activeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  background: white;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+}
+
+.activeCancelBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.activeCancelBtn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--text-primary);
+}
+
+.activeTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.activeTimer {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(229, 58, 37, 0.08);
+  padding: 10px 16px;
+  border-radius: 12px;
+}
+
+.activeProgressBar {
+  height: 4px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.activeProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.activeContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.activeExerciseNumber {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.activeExerciseName {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 32px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.activeSetInfo {
+  margin-bottom: 48px;
+}
+
+.activeSetNumber {
   font-size: 24px;
   font-weight: 700;
   color: var(--primary);
+  margin-bottom: 8px;
 }
 
-.progressBarContainer {
-  height: 8px;
-  background: #e0e0e0;
-  margin: 0 24px;
+.activeSetDetails {
+  font-size: 18px;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
-.progressBarFill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--primary-light));
-  transition: width 0.5s ease;
+.activeSetsGrid {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.modalExercises {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
+.activeSetCircle {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: white;
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.modalExercise {
+.activeSetCircle.current {
+  border-color: var(--primary);
+  background: rgba(229, 58, 37, 0.08);
+  color: var(--primary);
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(229, 58, 37, 0.2);
+}
+
+.activeSetCircle.completed {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  transform: scale(0.95);
+}
+
+.videoBtn {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-primary);
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.videoBtn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.completeSetBtn {
+  background: var(--primary);
+  color: white;
+  padding: 24px 48px;
+  border-radius: 16px;
+  font-size: 20px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(229, 58, 37, 0.3);
+  margin-bottom: 32px;
+}
+
+.completeSetBtn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(229, 58, 37, 0.4);
+}
+
+.activeNav {
+  display: flex;
+  gap: 16px;
+}
+
+.activeNavBtn {
+  background: white;
+  color: var(--text-primary);
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.activeNavBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.activeNavBtn:not(:disabled):hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+/* ===== TELA DE DESCANSO ===== */
+.restScreen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.restContent {
+  width: 100%;
+  max-width: 500px;
+  padding: 32px;
+  text-align: center;
+  color: white;
+}
+
+.restHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  margin-bottom: 12px;
-  background: var(--background-secondary);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  margin-bottom: 64px;
 }
 
-.modalExercise:hover {
-  background: #e8e8e8;
-  transform: translateX(4px);
-}
-
-.modalExercise.completed {
-  background: linear-gradient(135deg, var(--primary-light), var(--primary));
-  color: white;
-}
-
-.modalExerciseLeft {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.modalExerciseNumber {
-  width: 32px;
-  height: 32px;
-  background: white;
-  border-radius: 50%;
+.restCancelBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-size: 20px;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.restCancelBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.restProgress {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 20px;
   font-size: 14px;
-  color: var(--primary);
-}
-
-.modalExercise.completed .modalExerciseNumber {
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.modalExerciseName {
-  font-size: 15px;
   font-weight: 600;
-  margin-bottom: 4px;
 }
 
-.modalExerciseSets {
-  font-size: 13px;
-  opacity: 0.8;
-}
-
-.modalExerciseCheck {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: white;
+.restMain {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+}
+
+.restLabel {
+  font-size: 18px;
+  font-weight: 600;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 24px;
+}
+
+.restTimer {
+  font-size: 120px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 24px;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.restCircle {
+  width: 240px;
+  height: 240px;
+  margin: 0 auto 48px;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.2));
+}
+
+.restNext {
+  margin-bottom: 32px;
+}
+
+.restNextLabel {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.restNextExercise {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.skipRestBtn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 16px 32px;
+  border-radius: 12px;
   font-size: 16px;
-  color: var(--primary);
-}
-
-.modalActions {
-  display: flex;
-  gap: 12px;
-  padding: 24px;
-  border-top: 2px solid var(--background-secondary);
-}
-
-.modalBtnCancel,
-.modalBtnFinish {
-  flex: 1;
-  padding: 14px 24px;
-  border-radius: 8px;
-  font-size: 15px;
   font-weight: 600;
   transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.skipRestBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ===== TELA DE CELEBRAÇÃO ===== */
+.celebration {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  animation: celebrationIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.modalBtnCancel {
-  background: white;
-  color: var(--text-primary);
-  border: 2px solid var(--border);
+@keyframes celebrationIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.modalBtnCancel:hover {
-  background: var(--background-secondary);
-  border-color: var(--text-secondary);
-}
-
-.modalBtnFinish {
-  background: var(--primary);
+.celebrationContent {
+  text-align: center;
   color: white;
+  padding: 48px;
 }
 
-.modalBtnFinish:hover {
-  background: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(229, 58, 37, 0.3);
+.trophyIcon {
+  font-size: 120px;
+  margin-bottom: 32px;
+  animation: bounce 1s ease-in-out infinite;
 }
 
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.celebrationTitle {
+  font-size: 64px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.02em;
+}
+
+.celebrationText {
+  font-size: 24px;
+  opacity: 0.95;
+  margin-bottom: 48px;
+  font-weight: 500;
+}
+
+.celebrationStats {
+  display: flex;
+  gap: 48px;
+  justify-content: center;
+}
+
+.celebrationStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-size: 32px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 24px 32px;
+  border-radius: 20px;
+}
+
+.celebrationStat span {
+  font-size: 20px;
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .title {
-    font-size: 24px;
+    font-size: 36px;
   }
 
-  .workoutHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+  .subtitle {
+    font-size: 16px;
   }
 
-  .progress {
-    text-align: left;
-  }
-
-  .progressBar {
-    width: 100%;
+  .workoutName {
+    font-size: 22px;
   }
 
   .stats {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .modal {
-    padding: 10px;
+  .activeExerciseName {
+    font-size: 36px;
   }
 
-  .modalContent {
-    max-height: 95vh;
+  .restTimer {
+    font-size: 80px;
   }
 
-  .modalHeader {
+  .restCircle {
+    width: 180px;
+    height: 180px;
+  }
+
+  .celebrationTitle {
+    font-size: 48px;
+  }
+
+  .celebrationText {
+    font-size: 18px;
+  }
+
+  .celebrationStats {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    gap: 16px;
   }
 
-  .modalActions {
-    flex-direction: column;
+  .completeSetBtn {
+    padding: 20px 40px;
+    font-size: 18px;
+  }
+
+  .activeContent {
+    padding: 32px 24px;
   }
 }
