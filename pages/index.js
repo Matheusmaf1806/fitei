@@ -18,7 +18,7 @@ export default function Home() {
     }}>
       <div style={{ textAlign: 'center' }}>
         <img
-          src="https://image-xi-inky.vercel.app/public/tofitilogohorizontal.png"
+          src="https://image-xi-inky.vercel.app/public/tofitilateral.png"
           alt="ToFiti Logo"
           style={{ height: '80px', width: 'auto', marginBottom: '16px' }}
         />

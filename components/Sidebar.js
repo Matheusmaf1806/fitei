@@ -92,7 +92,7 @@ export default function Sidebar({ userType, isOpen, onClose, isMobile }) {
         <div className={styles.sidebarFooter}>
           <div className={styles.footerBrand}>
             <img
-              src="https://image-xi-inky.vercel.app/public/tofitilogohorizontal.png"
+              src="https://image-xi-inky.vercel.app/public/tofitilateral.png"
               alt="ToFiti Logo"
               className={styles.footerLogo}
             />

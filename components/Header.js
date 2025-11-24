@@ -11,7 +11,7 @@ export default function Header({ userType, toggleSidebar }) {
         </button>
         <div className={styles.logo}>
           <img
-            src="https://image-xi-inky.vercel.app/public/tofitilogohorizontal.png"
+            src="https://image-xi-inky.vercel.app/public/tofitilateral.png"
             alt="ToFiti Logo"
             className={styles.logoImage}
           />
