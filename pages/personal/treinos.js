@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faDumbbell,
@@ -50,10 +51,11 @@ const workoutTemplates = [
 ]
 
 export default function PersonalTreinos() {
+  const router = useRouter()
   const [activeFilter, setActiveFilter] = useState('Todos')
 
   const handleCreateWorkout = () => {
-    alert('Funcionalidade de criar novo treino será implementada em breve!')
+    router.push('/personal/criar-treino')
   }
 
   const handleEditWorkout = (workoutName) => {
@@ -69,7 +71,7 @@ export default function PersonalTreinos() {
   }
 
   const handleQuickCreate = (type) => {
-    alert(`Criando novo treino de ${type}`)
+    router.push('/personal/criar-treino')
   }
 
   const filteredTemplates = activeFilter === 'Todos'

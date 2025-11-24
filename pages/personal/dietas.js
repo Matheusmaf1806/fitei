@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faDumbbell,
@@ -66,8 +67,10 @@ const dietTemplates = [
 ]
 
 export default function PersonalDietas() {
+  const router = useRouter()
+
   const handleCreateDiet = () => {
-    alert('Funcionalidade de criar nova dieta será implementada em breve!')
+    router.push('/personal/criar-dieta')
   }
 
   const handleEditDiet = (dietName) => {
