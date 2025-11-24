@@ -10,7 +10,8 @@ import {
   faDollarSign,
   faHome,
   faPills,
-  faChartBar
+  faChartBar,
+  faUser
 } from '@fortawesome/free-solid-svg-icons'
 import styles from '../styles/Sidebar.module.css'
 
@@ -21,6 +22,7 @@ const personalMenuItems = [
   { label: 'Dietas', path: '/personal/dietas', icon: faUtensils },
   { label: 'Mensagens', path: '/personal/mensagens', icon: faComments },
   { label: 'Financeiro', path: '/personal/financeiro', icon: faDollarSign },
+  { label: 'Perfil', path: '/personal/perfil', icon: faUser },
 ]
 
 const alunoMenuItems = [

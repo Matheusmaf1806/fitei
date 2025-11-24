@@ -269,21 +269,19 @@ export default function CriarDieta() {
         calories: totals.calories + (food.calories * multiplier),
         protein: totals.protein + (food.protein * multiplier),
         carbs: totals.carbs + (food.carbs * multiplier),
-        fat: totals.fat + (food.fat * multiplier),
-        fiber: totals.fiber + (food.fiber * multiplier)
+        fat: totals.fat + (food.fat * multiplier)
       }
-    }, { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 })
+    }, { calories: 0, protein: 0, carbs: 0, fat: 0 })
   }
 
   const calculateDailyTotals = () => {
-    let dailyTotals = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+    let dailyTotals = { calories: 0, protein: 0, carbs: 0, fat: 0 }
     Object.values(selectedMeals).forEach(mealFoods => {
       const mealTotals = calculateMealTotals(mealFoods)
       dailyTotals.calories += mealTotals.calories
       dailyTotals.protein += mealTotals.protein
       dailyTotals.carbs += mealTotals.carbs
       dailyTotals.fat += mealTotals.fat
-      dailyTotals.fiber += mealTotals.fiber
     })
     return dailyTotals
   }
@@ -561,10 +559,6 @@ export default function CriarDieta() {
                   <span className={styles.macroLabel}>Gorduras</span>
                   <span className={styles.macroValue}>{dailyTotals.fat.toFixed(1)}g</span>
                 </div>
-                <div className={styles.macroItem}>
-                  <span className={styles.macroLabel}>Fibras</span>
-                  <span className={styles.macroValue}>{dailyTotals.fiber.toFixed(1)}g</span>
-                </div>
               </div>
             </div>
 
@@ -640,10 +634,6 @@ export default function CriarDieta() {
                         <div className={styles.nutritionItem}>
                           <span className={styles.nutritionLabel}>Gord.</span>
                           <span className={styles.nutritionValue}>{food.fat}g</span>
-                        </div>
-                        <div className={styles.nutritionItem}>
-                          <span className={styles.nutritionLabel}>Fibras</span>
-                          <span className={styles.nutritionValue}>{food.fiber}g</span>
                         </div>
                       </div>
                     </div>
