@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -14,7 +15,9 @@ import {
   faPaperPlane,
   faCalculator,
   faMobileAlt,
-  faFilePdf
+  faFilePdf,
+  faTimes,
+  faCheck
 } from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import styles from '../../styles/PersonalDietas.module.css'
@@ -66,27 +69,104 @@ const dietTemplates = [
   },
 ]
 
+// Mock de alunos disponíveis
+const availableStudents = [
+  { id: 1, name: 'João Silva', active: true },
+  { id: 2, name: 'Maria Santos', active: true },
+  { id: 3, name: 'Pedro Costa', active: true },
+  { id: 4, name: 'Ana Oliveira', active: true },
+  { id: 5, name: 'Carlos Rodrigues', active: false },
+]
+
 export default function PersonalDietas() {
   const router = useRouter()
+  const [showSendModal, setShowSendModal] = useState(false)
+  const [showMacroCalculator, setShowMacroCalculator] = useState(false)
+  const [selectedDiet, setSelectedDiet] = useState(null)
+  const [selectedStudents, setSelectedStudents] = useState([])
+  const [weight, setWeight] = useState('')
+  const [height, setHeight] = useState('')
+  const [age, setAge] = useState('')
+  const [goal, setGoal] = useState('maintenance')
 
   const handleCreateDiet = () => {
     router.push('/personal/criar-dieta')
   }
 
-  const handleEditDiet = (dietName) => {
-    alert(`Editando dieta: ${dietName}`)
+  const handleEditDiet = (diet) => {
+    // Em produção, passaria o ID da dieta via query params
+    router.push(`/personal/criar-dieta?edit=${diet.id}`)
   }
 
-  const handleDuplicateDiet = (dietName) => {
-    alert(`Duplicando dieta: ${dietName}`)
+  const handleDuplicateDiet = (diet) => {
+    // Em produção, criaria uma cópia no backend
+    alert(`Dieta "${diet.name}" duplicada com sucesso!\nNova dieta: "${diet.name} (Cópia)"`)
+    // Poderia redirecionar para edição da cópia
+    setTimeout(() => {
+      router.push('/personal/criar-dieta')
+    }, 1000)
   }
 
-  const handleSendDiet = (dietName) => {
-    alert(`Enviando dieta "${dietName}" para alunos`)
+  const handleSendDiet = (diet) => {
+    setSelectedDiet(diet)
+    setSelectedStudents([])
+    setShowSendModal(true)
   }
 
-  const handleToolClick = (toolName) => {
-    alert(`Abrindo ferramenta: ${toolName}`)
+  const toggleStudent = (studentId) => {
+    setSelectedStudents(prev =>
+      prev.includes(studentId)
+        ? prev.filter(id => id !== studentId)
+        : [...prev, studentId]
+    )
+  }
+
+  const confirmSendDiet = () => {
+    if (selectedStudents.length === 0) {
+      alert('Selecione pelo menos um aluno!')
+      return
+    }
+
+    const studentNames = availableStudents
+      .filter(s => selectedStudents.includes(s.id))
+      .map(s => s.name)
+      .join(', ')
+
+    alert(`Dieta "${selectedDiet.name}" enviada com sucesso para:\n${studentNames}`)
+    setShowSendModal(false)
+  }
+
+  const calculateMacros = () => {
+    if (!weight || !height || !age) {
+      alert('Preencha todos os campos!')
+      return
+    }
+
+    const w = parseFloat(weight)
+    const h = parseFloat(height) / 100
+    const a = parseInt(age)
+
+    // Fórmula Mifflin-St Jeor (simplificada para homem)
+    const bmr = 10 * w + 6.25 * (h * 100) - 5 * a + 5
+
+    let tdee = bmr * 1.55 // Activity level moderate
+
+    if (goal === 'bulking') tdee += 300
+    if (goal === 'cutting') tdee -= 500
+
+    const protein = Math.round(w * 2)
+    const fat = Math.round(w * 0.8)
+    const carbs = Math.round((tdee - (protein * 4 + fat * 9)) / 4)
+
+    alert(`Resultado do Cálculo:\n\nCalorias: ${Math.round(tdee)} kcal\nProteína: ${protein}g\nCarboidrato: ${carbs}g\nGordura: ${fat}g`)
+  }
+
+  const handleWhatsApp = () => {
+    alert('Funcionalidade de envio via WhatsApp em desenvolvimento!\n\nEm breve você poderá enviar dietas diretamente para seus alunos via WhatsApp.')
+  }
+
+  const handleGeneratePDF = () => {
+    alert('Funcionalidade de geração de PDF em desenvolvimento!\n\nEm breve você poderá gerar PDFs profissionais das suas dietas.')
   }
 
   return (
@@ -177,13 +257,13 @@ export default function PersonalDietas() {
               </div>
 
               <div className={styles.cardActions}>
-                <button className={styles.actionBtn} onClick={() => handleEditDiet(diet.name)}>
+                <button className={styles.actionBtn} onClick={() => handleEditDiet(diet)}>
                   <FontAwesomeIcon icon={faPen} /> Editar
                 </button>
-                <button className={styles.actionBtn} onClick={() => handleDuplicateDiet(diet.name)}>
+                <button className={styles.actionBtn} onClick={() => handleDuplicateDiet(diet)}>
                   <FontAwesomeIcon icon={faCopy} /> Duplicar
                 </button>
-                <button className={styles.actionBtn} onClick={() => handleSendDiet(diet.name)}>
+                <button className={styles.actionBtn} onClick={() => handleSendDiet(diet)}>
                   <FontAwesomeIcon icon={faPaperPlane} /> Enviar
                 </button>
               </div>
@@ -196,7 +276,7 @@ export default function PersonalDietas() {
           <div className={styles.toolsGrid}>
             <div
               className={styles.tool}
-              onClick={() => handleToolClick('Calculadora de Macros')}
+              onClick={() => setShowMacroCalculator(true)}
               style={{ cursor: 'pointer' }}
             >
               <span className={styles.toolIcon}>
@@ -209,7 +289,7 @@ export default function PersonalDietas() {
             </div>
             <div
               className={styles.tool}
-              onClick={() => handleToolClick('Envio via WhatsApp')}
+              onClick={handleWhatsApp}
               style={{ cursor: 'pointer' }}
             >
               <span className={styles.toolIcon}>
@@ -222,7 +302,7 @@ export default function PersonalDietas() {
             </div>
             <div
               className={styles.tool}
-              onClick={() => handleToolClick('Gerar PDF')}
+              onClick={handleGeneratePDF}
               style={{ cursor: 'pointer' }}
             >
               <span className={styles.toolIcon}>
@@ -235,6 +315,130 @@ export default function PersonalDietas() {
             </div>
           </div>
         </div>
+
+        {/* Modal de Enviar Dieta */}
+        {showSendModal && selectedDiet && (
+          <div className={styles.modalOverlay} onClick={() => setShowSendModal(false)}>
+            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.modalHeader}>
+                <div>
+                  <h2>Enviar Dieta</h2>
+                  <p className={styles.modalSubtitle}>
+                    Selecione os alunos para receber: {selectedDiet.name}
+                  </p>
+                </div>
+                <button className={styles.closeButton} onClick={() => setShowSendModal(false)}>
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+              </div>
+              <div className={styles.modalContent}>
+                <div className={styles.studentsList}>
+                  {availableStudents.map(student => (
+                    <div
+                      key={student.id}
+                      className={`${styles.studentItem} ${selectedStudents.includes(student.id) ? styles.selected : ''}`}
+                      onClick={() => toggleStudent(student.id)}
+                    >
+                      <div className={styles.checkbox}>
+                        {selectedStudents.includes(student.id) && (
+                          <FontAwesomeIcon icon={faCheck} />
+                        )}
+                      </div>
+                      <div className={styles.studentInfo}>
+                        <div className={styles.studentName}>{student.name}</div>
+                        <div className={styles.studentStatus}>
+                          {student.active ? 'Ativo' : 'Inativo'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.modalActions}>
+                  <button className={styles.btnSecondary} onClick={() => setShowSendModal(false)}>
+                    Cancelar
+                  </button>
+                  <button className={styles.btnPrimary} onClick={confirmSendDiet}>
+                    Enviar para {selectedStudents.length} aluno{selectedStudents.length !== 1 ? 's' : ''}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Calculadora de Macros */}
+        {showMacroCalculator && (
+          <div className={styles.modalOverlay} onClick={() => setShowMacroCalculator(false)}>
+            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.modalHeader}>
+                <div>
+                  <h2>Calculadora de Macros</h2>
+                  <p className={styles.modalSubtitle}>
+                    Calcule as necessidades calóricas e macronutrientes
+                  </p>
+                </div>
+                <button className={styles.closeButton} onClick={() => setShowMacroCalculator(false)}>
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+              </div>
+              <div className={styles.modalContent}>
+                <div className={styles.calculatorForm}>
+                  <div className={styles.formGroup}>
+                    <label>Peso (kg)</label>
+                    <input
+                      type="number"
+                      className={styles.input}
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                      placeholder="Ex: 75"
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Altura (cm)</label>
+                    <input
+                      type="number"
+                      className={styles.input}
+                      value={height}
+                      onChange={(e) => setHeight(e.target.value)}
+                      placeholder="Ex: 175"
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Idade</label>
+                    <input
+                      type="number"
+                      className={styles.input}
+                      value={age}
+                      onChange={(e) => setAge(e.target.value)}
+                      placeholder="Ex: 30"
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Objetivo</label>
+                    <select
+                      className={styles.select}
+                      value={goal}
+                      onChange={(e) => setGoal(e.target.value)}
+                    >
+                      <option value="cutting">Emagrecimento</option>
+                      <option value="maintenance">Manutenção</option>
+                      <option value="bulking">Ganho de Massa</option>
+                    </select>
+                  </div>
+                </div>
+                <div className={styles.modalActions}>
+                  <button className={styles.btnSecondary} onClick={() => setShowMacroCalculator(false)}>
+                    Cancelar
+                  </button>
+                  <button className={styles.btnPrimary} onClick={calculateMacros}>
+                    <FontAwesomeIcon icon={faCalculator} />
+                    Calcular
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   )

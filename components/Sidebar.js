@@ -42,6 +42,10 @@ export default function Sidebar({ userType, isOpen, onClose, isMobile }) {
     }
   }
 
+  const userInfo = userType === 'personal'
+    ? { name: 'Personal Trainer', initials: 'PT', role: 'Personal' }
+    : { name: 'Aluno', initials: 'AL', role: 'Aluno' }
+
   return (
     <>
       {isMobile && isOpen && (
@@ -51,6 +55,16 @@ export default function Sidebar({ userType, isOpen, onClose, isMobile }) {
         />
       )}
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}>
+        <div className={styles.sidebarHeader}>
+          <div className={styles.avatar}>
+            {userInfo.initials}
+          </div>
+          <div className={styles.userInfo}>
+            <div className={styles.userName}>{userInfo.name}</div>
+            <div className={styles.userRole}>{userInfo.role}</div>
+          </div>
+        </div>
+
         <nav className={styles.nav}>
           {menuItems.map((item) => {
             const isActive = router.pathname === item.path
@@ -61,14 +75,25 @@ export default function Sidebar({ userType, isOpen, onClose, isMobile }) {
                 className={`${styles.navItem} ${isActive ? styles.active : ''}`}
                 onClick={handleLinkClick}
               >
-                <span className={styles.icon}>
-                  <FontAwesomeIcon icon={item.icon} />
-                </span>
-                <span className={styles.label}>{item.label}</span>
+                <div className={styles.navItemContent}>
+                  <span className={styles.icon}>
+                    <FontAwesomeIcon icon={item.icon} />
+                  </span>
+                  <span className={styles.label}>{item.label}</span>
+                </div>
+                {isActive && <div className={styles.activeIndicator} />}
               </Link>
             )
           })}
         </nav>
+
+        <div className={styles.sidebarFooter}>
+          <div className={styles.footerBrand}>
+            <div className={styles.brandIcon}>F</div>
+            <span className={styles.brandText}>Fitei</span>
+          </div>
+          <div className={styles.footerVersion}>v1.0.0</div>
+        </div>
       </aside>
     </>
   )

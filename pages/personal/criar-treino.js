@@ -509,8 +509,8 @@ export default function CriarTreino() {
 
         {/* Modal de Adicionar Exercício */}
         {showExerciseModal && (
-          <div className={styles.modal} onClick={() => setShowExerciseModal(false)}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <div className={styles.modalOverlay} onClick={() => setShowExerciseModal(false)}>
+            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
               <div className={styles.modalHeader}>
                 <div>
                   <h2 className={styles.modalTitle}>Adicionar Exercício</h2>
