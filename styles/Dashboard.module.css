@@ -74,17 +74,17 @@
 }
 
 .alert.warning {
-  background: #fff3e0;
+  background: rgba(229, 58, 37, 0.08);
   border-left-color: var(--warning);
 }
 
 .alert.info {
-  background: #e3f2fd;
-  border-left-color: #2196f3;
+  background: rgba(229, 58, 37, 0.05);
+  border-left-color: var(--primary);
 }
 
 .alert.success {
-  background: #e8f5e9;
+  background: rgba(229, 58, 37, 0.06);
   border-left-color: var(--success);
 }
 

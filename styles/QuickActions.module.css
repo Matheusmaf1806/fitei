@@ -50,7 +50,7 @@
 }
 
 .action.info:hover {
-  background: #2196f3;
+  background: var(--primary);
   color: white;
 }
 

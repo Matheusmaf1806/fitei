@@ -32,29 +32,44 @@ const alunoMenuItems = [
   { label: 'Chat', path: '/aluno/chat', icon: faComments },
 ]
 
-export default function Sidebar({ userType, isOpen }) {
+export default function Sidebar({ userType, isOpen, onClose, isMobile }) {
   const router = useRouter()
   const menuItems = userType === 'personal' ? personalMenuItems : alunoMenuItems
 
+  const handleLinkClick = () => {
+    if (isMobile && onClose) {
+      onClose()
+    }
+  }
+
   return (
-    <aside className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}>
-      <nav className={styles.nav}>
-        {menuItems.map((item) => {
-          const isActive = router.pathname === item.path
-          return (
-            <Link
-              key={item.path}
-              href={item.path}
-              className={`${styles.navItem} ${isActive ? styles.active : ''}`}
-            >
-              <span className={styles.icon}>
-                <FontAwesomeIcon icon={item.icon} />
-              </span>
-              <span className={styles.label}>{item.label}</span>
-            </Link>
-          )
-        })}
-      </nav>
-    </aside>
+    <>
+      {isMobile && isOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={onClose}
+        />
+      )}
+      <aside className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}>
+        <nav className={styles.nav}>
+          {menuItems.map((item) => {
+            const isActive = router.pathname === item.path
+            return (
+              <Link
+                key={item.path}
+                href={item.path}
+                className={`${styles.navItem} ${isActive ? styles.active : ''}`}
+                onClick={handleLinkClick}
+              >
+                <span className={styles.icon}>
+                  <FontAwesomeIcon icon={item.icon} />
+                </span>
+                <span className={styles.label}>{item.label}</span>
+              </Link>
+            )
+          })}
+        </nav>
+      </aside>
+    </>
   )
 }

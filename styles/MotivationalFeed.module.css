@@ -33,22 +33,22 @@
 }
 
 .message.motivation {
-  background: #fff3e0;
+  background: rgba(229, 58, 37, 0.08);
   border-left-color: var(--warning);
 }
 
 .message.achievement {
-  background: #f3e5f5;
-  border-left-color: #9c27b0;
+  background: rgba(229, 58, 37, 0.06);
+  border-left-color: var(--primary);
 }
 
 .message.tip {
-  background: #e3f2fd;
-  border-left-color: #2196f3;
+  background: rgba(229, 58, 37, 0.05);
+  border-left-color: var(--primary-light);
 }
 
 .message.reminder {
-  background: #ffebee;
+  background: rgba(229, 58, 37, 0.1);
   border-left-color: var(--primary);
 }
 

@@ -212,7 +212,7 @@
 
 .progressBar {
   height: 8px;
-  background: #e0e0e0;
+  background: var(--border);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 16px;

@@ -401,9 +401,9 @@
 }
 
 .iconBtn.deleteBtn:hover {
-  background: #fee;
-  border-color: #f44;
-  color: #f44;
+  background: rgba(229, 58, 37, 0.1);
+  border-color: var(--error);
+  color: var(--error);
 }
 
 .exerciseParams {
@@ -613,7 +613,7 @@
 }
 
 .tipsCard {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
 }
 
@@ -692,7 +692,7 @@
 }
 
 .infoCard {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   border-radius: var(--radius-xl);
   padding: 28px;
   color: white;
@@ -1085,18 +1085,18 @@
 }
 
 .difficultyBadge.success {
-  background: #d4edda;
-  color: #155724;
+  background: #ffe5e1;
+  color: var(--primary-darker);
 }
 
 .difficultyBadge.warning {
-  background: #fff3cd;
-  color: #856404;
+  background: #ffd4cc;
+  color: var(--primary-dark);
 }
 
 .difficultyBadge.danger {
-  background: #f8d7da;
-  color: #721c24;
+  background: #ffc2b8;
+  color: var(--primary-darker);
 }
 
 .optionName {

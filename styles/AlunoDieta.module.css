@@ -97,7 +97,7 @@
 
 .macroBar {
   height: 6px;
-  background: #e0e0e0;
+  background: var(--border);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -131,7 +131,7 @@
 
 .meal.completed {
   border-left-color: var(--success);
-  background: linear-gradient(to right, #e8f5e9, white);
+  background: linear-gradient(to right, rgba(229, 58, 37, 0.08), white);
 }
 
 .mealHeader {
