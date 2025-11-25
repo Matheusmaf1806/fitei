@@ -10,7 +10,8 @@ import {
   faUsers,
   faPen,
   faCopy,
-  faPersonSwimming
+  faPersonSwimming,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import styles from '../../styles/PersonalTreinos.module.css'
@@ -53,25 +54,36 @@ const workoutTemplates = [
 export default function PersonalTreinos() {
   const router = useRouter()
   const [activeFilter, setActiveFilter] = useState('Todos')
+  const [showAssignModal, setShowAssignModal] = useState(false)
+  const [selectedWorkout, setSelectedWorkout] = useState(null)
 
   const handleCreateWorkout = () => {
     router.push('/personal/criar-treino')
   }
 
-  const handleEditWorkout = (workoutName) => {
-    alert(`Editando treino: ${workoutName}`)
+  const handleEditWorkout = (workoutId, workoutName) => {
+    // Redireciona para página de edição
+    router.push(`/personal/criar-treino?id=${workoutId}&edit=true`)
   }
 
-  const handleDuplicateWorkout = (workoutName) => {
-    alert(`Duplicando treino: ${workoutName}`)
+  const handleDuplicateWorkout = (template) => {
+    // Cria cópia do treino
+    alert(`Treino "${template.name}" duplicado com sucesso!\nNova cópia: "${template.name} (Cópia)"`)
+    // Aqui você salvaria no banco de dados
   }
 
-  const handleAssignWorkout = (workoutName) => {
-    alert(`Atribuindo treino "${workoutName}" a alunos`)
+  const handleAssignWorkout = (workout) => {
+    setSelectedWorkout(workout)
+    setShowAssignModal(true)
+  }
+
+  const handleConfirmAssign = (students) => {
+    alert(`Treino "${selectedWorkout.name}" atribuído a ${students.length} aluno(s)`)
+    setShowAssignModal(false)
   }
 
   const handleQuickCreate = (type) => {
-    router.push('/personal/criar-treino')
+    router.push(`/personal/criar-treino?type=${type}`)
   }
 
   const filteredTemplates = activeFilter === 'Todos'
@@ -151,19 +163,19 @@ export default function PersonalTreinos() {
               <div className={styles.cardActions}>
                 <button
                   className={styles.actionBtn}
-                  onClick={() => handleEditWorkout(template.name)}
+                  onClick={() => handleEditWorkout(template.id, template.name)}
                 >
                   <FontAwesomeIcon icon={faPen} /> Editar
                 </button>
                 <button
                   className={styles.actionBtn}
-                  onClick={() => handleDuplicateWorkout(template.name)}
+                  onClick={() => handleDuplicateWorkout(template)}
                 >
                   <FontAwesomeIcon icon={faCopy} /> Duplicar
                 </button>
                 <button
                   className={styles.actionBtn}
-                  onClick={() => handleAssignWorkout(template.name)}
+                  onClick={() => handleAssignWorkout(template)}
                 >
                   <FontAwesomeIcon icon={faUsers} /> Atribuir
                 </button>
@@ -207,6 +219,42 @@ export default function PersonalTreinos() {
             </div>
           </div>
         </div>
+
+        {/* Modal de Atribuir Treino */}
+        {showAssignModal && selectedWorkout && (
+          <div className={styles.modalOverlay} onClick={() => setShowAssignModal(false)}>
+            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.modalHeader}>
+                <h2>Atribuir Treino</h2>
+                <button className={styles.modalClose} onClick={() => setShowAssignModal(false)}>
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+              </div>
+              <div className={styles.modalContent}>
+                <p className={styles.modalText}>
+                  Atribuir o treino <strong>{selectedWorkout.name}</strong> a quais alunos?
+                </p>
+                <div className={styles.studentsList}>
+                  {/* Lista de alunos mockada - substituir por dados reais */}
+                  {['João Silva', 'Maria Santos', 'Pedro Oliveira', 'Ana Costa'].map((student, index) => (
+                    <label key={index} className={styles.studentItem}>
+                      <input type="checkbox" />
+                      <span>{student}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.modalFooter}>
+                <button className={styles.btnSecondary} onClick={() => setShowAssignModal(false)}>
+                  Cancelar
+                </button>
+                <button className={styles.btnPrimary} onClick={() => handleConfirmAssign([])}>
+                  Atribuir Treino
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   )
