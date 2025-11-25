@@ -20,7 +20,10 @@ import {
   faCoffee,
   faShoppingCart,
   faCheck,
-  faClipboard
+  faClipboard,
+  faChevronDown,
+  faChevronUp,
+  faPen
 } from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
 import styles from '../../styles/CriarDieta.module.css'
@@ -29,195 +32,158 @@ export default function CriarDieta() {
   const router = useRouter()
   const [dietName, setDietName] = useState('')
   const [targetCalories, setTargetCalories] = useState(2000)
-  const [selectedMeals, setSelectedMeals] = useState({
-    'Café da Manhã': [],
-    'Lanche da Manhã': [],
-    'Almoço': [],
-    'Lanche da Tarde': [],
-    'Pré-Treino': [],
-    'Jantar': [],
-    'Ceia': []
-  })
+
+  // NOVO: Array de refeições ao invés de objeto
+  const [selectedMeals, setSelectedMeals] = useState([
+    { id: '1', name: 'Café da Manhã', foods: [], alternatives: [] },
+    { id: '2', name: 'Lanche da Manhã', foods: [], alternatives: [] },
+    { id: '3', name: 'Almoço', foods: [], alternatives: [] },
+    { id: '4', name: 'Lanche da Tarde', foods: [], alternatives: [] },
+    { id: '5', name: 'Jantar', foods: [], alternatives: [] },
+  ])
+
   const [showFoodModal, setShowFoodModal] = useState(false)
-  const [currentMeal, setCurrentMeal] = useState('')
+  const [currentMealId, setCurrentMealId] = useState(null)
+  const [isAddingAlternative, setIsAddingAlternative] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [showShoppingList, setShowShoppingList] = useState(false)
   const [checkedItems, setCheckedItems] = useState({})
 
-  // Comprehensive food database with macronutrients per 100g
+  // NOVO: Estados para edição e alternativas
+  const [editingMealId, setEditingMealId] = useState(null)
+  const [editingMealName, setEditingMealName] = useState('')
+  const [expandedAlternatives, setExpandedAlternatives] = useState({})
+
+  // Database completo de alimentos
   const foodDatabase = {
     'Proteínas - Carnes': [
-      { name: 'Peito de Frango Grelhado', calories: 165, protein: 31, carbs: 0, fat: 3.6, fiber: 0 },
-      { name: 'Peito de Frango Cozido', calories: 165, protein: 31, carbs: 0, fat: 3.6, fiber: 0 },
-      { name: 'Coxa de Frango sem Pele', calories: 119, protein: 21, carbs: 0, fat: 3.7, fiber: 0 },
-      { name: 'Carne Bovina Magra (Patinho)', calories: 158, protein: 26, carbs: 0, fat: 5.5, fiber: 0 },
-      { name: 'Carne Bovina (Alcatra)', calories: 198, protein: 23, carbs: 0, fat: 11, fiber: 0 },
-      { name: 'Carne Bovina (Filé Mignon)', calories: 206, protein: 23, carbs: 0, fat: 12, fiber: 0 },
-      { name: 'Carne Bovina (Picanha)', calories: 271, protein: 20, carbs: 0, fat: 21, fiber: 0 },
-      { name: 'Carne Bovina Moída (Magra)', calories: 176, protein: 20, carbs: 0, fat: 10, fiber: 0 },
-      { name: 'Carne de Porco (Lombo)', calories: 143, protein: 21, carbs: 0, fat: 6, fiber: 0 },
-      { name: 'Carne de Porco (Bisteca)', calories: 231, protein: 19, carbs: 0, fat: 17, fiber: 0 },
-      { name: 'Peru (Peito)', calories: 135, protein: 30, carbs: 0, fat: 0.7, fiber: 0 },
-      { name: 'Patinho Moído', calories: 158, protein: 26, carbs: 0, fat: 5.5, fiber: 0 },
+      { name: 'Peito de Frango Grelhado', calories: 165, protein: 31, carbs: 0, fat: 3.6 },
+      { name: 'Peito de Frango Cozido', calories: 165, protein: 31, carbs: 0, fat: 3.6 },
+      { name: 'Coxa de Frango sem Pele', calories: 119, protein: 21, carbs: 0, fat: 3.7 },
+      { name: 'Carne Bovina Magra (Patinho)', calories: 158, protein: 26, carbs: 0, fat: 5.5 },
+      { name: 'Carne Bovina (Alcatra)', calories: 198, protein: 23, carbs: 0, fat: 11 },
+      { name: 'Carne Bovina (Filé Mignon)', calories: 206, protein: 23, carbs: 0, fat: 12 },
+      { name: 'Carne Bovina Moída (Magra)', calories: 176, protein: 20, carbs: 0, fat: 10 },
+      { name: 'Peru (Peito)', calories: 135, protein: 30, carbs: 0, fat: 0.7 },
     ],
     'Proteínas - Peixes': [
-      { name: 'Salmão', calories: 208, protein: 20, carbs: 0, fat: 13, fiber: 0 },
-      { name: 'Atum em Água', calories: 116, protein: 26, carbs: 0, fat: 0.8, fiber: 0 },
-      { name: 'Atum em Óleo', calories: 198, protein: 29, carbs: 0, fat: 8, fiber: 0 },
-      { name: 'Tilápia', calories: 96, protein: 20, carbs: 0, fat: 1.7, fiber: 0 },
-      { name: 'Bacalhau', calories: 82, protein: 18, carbs: 0, fat: 0.7, fiber: 0 },
-      { name: 'Sardinha', calories: 208, protein: 25, carbs: 0, fat: 11, fiber: 0 },
-      { name: 'Pescada', calories: 86, protein: 17, carbs: 0, fat: 1.5, fiber: 0 },
-      { name: 'Merluza', calories: 85, protein: 17, carbs: 0, fat: 1.4, fiber: 0 },
-      { name: 'Linguado', calories: 91, protein: 19, carbs: 0, fat: 1.2, fiber: 0 },
-      { name: 'Camarão', calories: 99, protein: 24, carbs: 0.2, fat: 0.3, fiber: 0 },
+      { name: 'Salmão', calories: 208, protein: 20, carbs: 0, fat: 13 },
+      { name: 'Atum em Água', calories: 116, protein: 26, carbs: 0, fat: 0.8 },
+      { name: 'Tilápia', calories: 96, protein: 20, carbs: 0, fat: 1.7 },
+      { name: 'Bacalhau', calories: 82, protein: 18, carbs: 0, fat: 0.7 },
     ],
     'Proteínas - Ovos e Laticínios': [
-      { name: 'Ovo Inteiro Cozido', calories: 155, protein: 13, carbs: 1.1, fat: 11, fiber: 0 },
-      { name: 'Clara de Ovo', calories: 52, protein: 11, carbs: 0.7, fat: 0.2, fiber: 0 },
-      { name: 'Gema de Ovo', calories: 322, protein: 16, carbs: 3.6, fat: 27, fiber: 0 },
-      { name: 'Omelete Simples', calories: 154, protein: 11, carbs: 0.6, fat: 12, fiber: 0 },
-      { name: 'Queijo Cottage', calories: 98, protein: 11, carbs: 3.4, fat: 4.3, fiber: 0 },
-      { name: 'Queijo Minas Frescal', calories: 264, protein: 17, carbs: 5.5, fat: 19, fiber: 0 },
-      { name: 'Queijo Ricota', calories: 174, protein: 11, carbs: 3, fat: 13, fiber: 0 },
-      { name: 'Queijo Muçarela', calories: 280, protein: 28, carbs: 2.2, fat: 17, fiber: 0 },
-      { name: 'Iogurte Grego Natural', calories: 97, protein: 10, carbs: 3.6, fat: 5, fiber: 0 },
-      { name: 'Iogurte Desnatado', calories: 56, protein: 5.7, carbs: 7.7, fat: 0.2, fiber: 0 },
-      { name: 'Leite Integral', calories: 61, protein: 3.2, carbs: 4.8, fat: 3.3, fiber: 0 },
-      { name: 'Leite Desnatado', calories: 34, protein: 3.4, carbs: 5, fat: 0.1, fiber: 0 },
-      { name: 'Requeijão Light', calories: 174, protein: 11, carbs: 3.6, fat: 13, fiber: 0 },
+      { name: 'Ovo Inteiro Cozido', calories: 155, protein: 13, carbs: 1.1, fat: 11 },
+      { name: 'Clara de Ovo', calories: 52, protein: 11, carbs: 0.7, fat: 0.2 },
+      { name: 'Queijo Cottage', calories: 98, protein: 11, carbs: 3.4, fat: 4.3 },
+      { name: 'Iogurte Grego Natural', calories: 97, protein: 10, carbs: 3.6, fat: 5 },
+      { name: 'Leite Integral', calories: 61, protein: 3.2, carbs: 4.8, fat: 3.3 },
     ],
-    'Carboidratos - Cereais e Grãos': [
-      { name: 'Arroz Branco Cozido', calories: 130, protein: 2.7, carbs: 28, fat: 0.3, fiber: 0.4 },
-      { name: 'Arroz Integral Cozido', calories: 112, protein: 2.6, carbs: 24, fat: 0.9, fiber: 1.8 },
-      { name: 'Arroz Parboilizado', calories: 123, protein: 2.5, carbs: 27, fat: 0.4, fiber: 0.6 },
-      { name: 'Macarrão Cozido', calories: 131, protein: 5, carbs: 25, fat: 1.1, fiber: 1.8 },
-      { name: 'Macarrão Integral Cozido', calories: 124, protein: 5, carbs: 26, fat: 1.3, fiber: 3.5 },
-      { name: 'Aveia em Flocos', calories: 389, protein: 17, carbs: 66, fat: 7, fiber: 10 },
-      { name: 'Granola', calories: 471, protein: 13, carbs: 64, fat: 17, fiber: 9 },
-      { name: 'Quinoa Cozida', calories: 120, protein: 4.4, carbs: 21, fat: 1.9, fiber: 2.8 },
-      { name: 'Cuscuz Marroquino', calories: 112, protein: 3.8, carbs: 23, fat: 0.2, fiber: 1.4 },
-      { name: 'Milho Verde Cozido', calories: 86, protein: 3.3, carbs: 19, fat: 1.4, fiber: 2.4 },
-      { name: 'Ervilha Cozida', calories: 81, protein: 5.4, carbs: 14, fat: 0.4, fiber: 5.7 },
-      { name: 'Grão de Bico Cozido', calories: 164, protein: 8.9, carbs: 27, fat: 2.6, fiber: 7.6 },
-      { name: 'Lentilha Cozida', calories: 116, protein: 9, carbs: 20, fat: 0.4, fiber: 7.9 },
-      { name: 'Feijão Preto Cozido', calories: 77, protein: 4.5, carbs: 14, fat: 0.5, fiber: 4.4 },
-      { name: 'Feijão Carioca Cozido', calories: 76, protein: 4.8, carbs: 13.6, fat: 0.5, fiber: 6.4 },
+    'Carboidratos - Cereais': [
+      { name: 'Arroz Branco Cozido', calories: 130, protein: 2.7, carbs: 28, fat: 0.3 },
+      { name: 'Arroz Integral Cozido', calories: 112, protein: 2.6, carbs: 24, fat: 0.9 },
+      { name: 'Macarrão Cozido', calories: 131, protein: 5, carbs: 25, fat: 1.1 },
+      { name: 'Aveia em Flocos', calories: 389, protein: 17, carbs: 66, fat: 7 },
+      { name: 'Feijão Carioca Cozido', calories: 76, protein: 4.8, carbs: 13.6, fat: 0.5 },
     ],
     'Carboidratos - Tubérculos': [
-      { name: 'Batata Doce Cozida', calories: 86, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3 },
-      { name: 'Batata Doce Assada', calories: 90, protein: 2, carbs: 21, fat: 0.2, fiber: 3.3 },
-      { name: 'Batata Inglesa Cozida', calories: 87, protein: 1.9, carbs: 20, fat: 0.1, fiber: 1.8 },
-      { name: 'Batata Inglesa Assada', calories: 93, protein: 2.5, carbs: 21, fat: 0.1, fiber: 2.1 },
-      { name: 'Mandioca Cozida', calories: 125, protein: 0.6, carbs: 30, fat: 0.3, fiber: 1.6 },
-      { name: 'Inhame Cozido', calories: 118, protein: 1.5, carbs: 28, fat: 0.2, fiber: 4.1 },
-      { name: 'Cará Cozido', calories: 118, protein: 1.5, carbs: 28, fat: 0.2, fiber: 4.1 },
-      { name: 'Mandioquinha Cozida', calories: 98, protein: 1, carbs: 23, fat: 0.3, fiber: 2.3 },
+      { name: 'Batata Doce Cozida', calories: 86, protein: 1.6, carbs: 20, fat: 0.1 },
+      { name: 'Batata Inglesa Cozida', calories: 87, protein: 1.9, carbs: 20, fat: 0.1 },
+      { name: 'Mandioca Cozida', calories: 125, protein: 0.6, carbs: 30, fat: 0.3 },
     ],
     'Carboidratos - Pães': [
-      { name: 'Pão Francês', calories: 300, protein: 9, carbs: 58, fat: 3.1, fiber: 2.3 },
-      { name: 'Pão de Forma Integral', calories: 253, protein: 9, carbs: 43, fat: 4.2, fiber: 6.7 },
-      { name: 'Pão de Forma Branco', calories: 266, protein: 8.3, carbs: 50, fat: 3.3, fiber: 2.7 },
-      { name: 'Pão Sírio Integral', calories: 268, protein: 10, carbs: 52, fat: 2.2, fiber: 7 },
-      { name: 'Pão de Centeio', calories: 259, protein: 8.5, carbs: 48, fat: 3.3, fiber: 5.8 },
-      { name: 'Tapioca', calories: 357, protein: 0.6, carbs: 88, fat: 0.3, fiber: 1.4 },
-      { name: 'Torrada Integral', calories: 373, protein: 11, carbs: 66, fat: 5.6, fiber: 9.7 },
+      { name: 'Pão Francês', calories: 300, protein: 9, carbs: 58, fat: 3.1 },
+      { name: 'Pão de Forma Integral', calories: 253, protein: 9, carbs: 43, fat: 4.2 },
+      { name: 'Tapioca', calories: 357, protein: 0.6, carbs: 88, fat: 0.3 },
     ],
-    'Vegetais - Folhas': [
-      { name: 'Alface', calories: 15, protein: 1.4, carbs: 2.3, fat: 0.2, fiber: 1.3 },
-      { name: 'Rúcula', calories: 25, protein: 2.6, carbs: 3.7, fat: 0.7, fiber: 1.6 },
-      { name: 'Espinafre', calories: 23, protein: 2.9, carbs: 3.6, fat: 0.4, fiber: 2.2 },
-      { name: 'Couve', calories: 49, protein: 4.3, carbs: 10, fat: 0.9, fiber: 4.1 },
-      { name: 'Agrião', calories: 11, protein: 2.6, carbs: 1.3, fat: 0.1, fiber: 1.1 },
-      { name: 'Acelga', calories: 19, protein: 1.8, carbs: 3.7, fat: 0.2, fiber: 1.6 },
-      { name: 'Almeirão', calories: 23, protein: 1.7, carbs: 4.7, fat: 0.3, fiber: 3.1 },
-      { name: 'Repolho', calories: 25, protein: 1.3, carbs: 5.8, fat: 0.1, fiber: 2.5 },
-    ],
-    'Vegetais - Legumes': [
-      { name: 'Brócolis Cozido', calories: 35, protein: 2.4, carbs: 7, fat: 0.4, fiber: 3.3 },
-      { name: 'Couve-flor Cozida', calories: 23, protein: 1.9, carbs: 4.7, fat: 0.2, fiber: 2.3 },
-      { name: 'Cenoura Cozida', calories: 35, protein: 0.8, carbs: 8.2, fat: 0.2, fiber: 3 },
-      { name: 'Beterraba Cozida', calories: 44, protein: 1.7, carbs: 10, fat: 0.2, fiber: 2.8 },
-      { name: 'Abobrinha Cozida', calories: 17, protein: 1.2, carbs: 3.1, fat: 0.3, fiber: 1 },
-      { name: 'Berinjela Cozida', calories: 35, protein: 0.8, carbs: 8.7, fat: 0.2, fiber: 2.5 },
-      { name: 'Abóbora Cozida', calories: 26, protein: 1, carbs: 6.5, fat: 0.1, fiber: 0.5 },
-      { name: 'Chuchu Cozido', calories: 19, protein: 0.8, carbs: 4.5, fat: 0.1, fiber: 1.7 },
-      { name: 'Vagem Cozida', calories: 31, protein: 1.8, carbs: 7, fat: 0.1, fiber: 3.4 },
-      { name: 'Quiabo Cozido', calories: 22, protein: 1.9, carbs: 4.5, fat: 0.2, fiber: 2.5 },
-      { name: 'Tomate', calories: 18, protein: 0.9, carbs: 3.9, fat: 0.2, fiber: 1.2 },
-      { name: 'Pepino', calories: 15, protein: 0.7, carbs: 3.6, fat: 0.1, fiber: 0.5 },
-      { name: 'Pimentão', calories: 31, protein: 1, carbs: 6, fat: 0.3, fiber: 2.1 },
+    'Vegetais': [
+      { name: 'Brócolis Cozido', calories: 35, protein: 2.4, carbs: 7, fat: 0.4 },
+      { name: 'Alface', calories: 15, protein: 1.4, carbs: 2.3, fat: 0.2 },
+      { name: 'Tomate', calories: 18, protein: 0.9, carbs: 3.9, fat: 0.2 },
+      { name: 'Cenoura Cozida', calories: 35, protein: 0.8, carbs: 8.2, fat: 0.2 },
     ],
     'Frutas': [
-      { name: 'Banana', calories: 89, protein: 1.1, carbs: 23, fat: 0.3, fiber: 2.6 },
-      { name: 'Maçã', calories: 52, protein: 0.3, carbs: 14, fat: 0.2, fiber: 2.4 },
-      { name: 'Laranja', calories: 47, protein: 0.9, carbs: 12, fat: 0.1, fiber: 2.4 },
-      { name: 'Mamão Papaya', calories: 43, protein: 0.5, carbs: 11, fat: 0.1, fiber: 1.7 },
-      { name: 'Morango', calories: 32, protein: 0.7, carbs: 7.7, fat: 0.3, fiber: 2 },
-      { name: 'Melancia', calories: 30, protein: 0.6, carbs: 7.6, fat: 0.2, fiber: 0.4 },
-      { name: 'Melão', calories: 34, protein: 0.8, carbs: 8.2, fat: 0.2, fiber: 0.9 },
-      { name: 'Abacaxi', calories: 50, protein: 0.5, carbs: 13, fat: 0.1, fiber: 1.4 },
-      { name: 'Manga', calories: 60, protein: 0.8, carbs: 15, fat: 0.4, fiber: 1.6 },
-      { name: 'Uva', calories: 69, protein: 0.7, carbs: 18, fat: 0.2, fiber: 0.9 },
-      { name: 'Pêra', calories: 57, protein: 0.4, carbs: 15, fat: 0.1, fiber: 3.1 },
-      { name: 'Pêssego', calories: 39, protein: 0.9, carbs: 9.5, fat: 0.3, fiber: 1.5 },
-      { name: 'Kiwi', calories: 61, protein: 1.1, carbs: 15, fat: 0.5, fiber: 3 },
-      { name: 'Abacate', calories: 160, protein: 2, carbs: 8.5, fat: 15, fiber: 6.7 },
-      { name: 'Goiaba', calories: 68, protein: 2.6, carbs: 14, fat: 1, fiber: 5.4 },
+      { name: 'Banana', calories: 89, protein: 1.1, carbs: 23, fat: 0.3 },
+      { name: 'Maçã', calories: 52, protein: 0.3, carbs: 14, fat: 0.2 },
+      { name: 'Morango', calories: 32, protein: 0.7, carbs: 7.7, fat: 0.3 },
+      { name: 'Abacate', calories: 160, protein: 2, carbs: 8.5, fat: 15 },
     ],
     'Gorduras Saudáveis': [
-      { name: 'Azeite de Oliva Extra Virgem', calories: 884, protein: 0, carbs: 0, fat: 100, fiber: 0 },
-      { name: 'Óleo de Coco', calories: 862, protein: 0, carbs: 0, fat: 100, fiber: 0 },
-      { name: 'Abacate', calories: 160, protein: 2, carbs: 8.5, fat: 15, fiber: 6.7 },
-      { name: 'Castanha do Pará', calories: 656, protein: 14, carbs: 12, fat: 66, fiber: 7.5 },
-      { name: 'Castanha de Caju', calories: 553, protein: 18, carbs: 30, fat: 44, fiber: 3.3 },
-      { name: 'Amêndoas', calories: 579, protein: 21, carbs: 22, fat: 50, fiber: 12 },
-      { name: 'Nozes', calories: 654, protein: 15, carbs: 14, fat: 65, fiber: 6.7 },
-      { name: 'Amendoim', calories: 567, protein: 26, carbs: 16, fat: 49, fiber: 8.5 },
-      { name: 'Pasta de Amendoim', calories: 588, protein: 25, carbs: 20, fat: 50, fiber: 6 },
-      { name: 'Semente de Chia', calories: 486, protein: 17, carbs: 42, fat: 31, fiber: 34 },
-      { name: 'Semente de Linhaça', calories: 534, protein: 18, carbs: 29, fat: 42, fiber: 27 },
-      { name: 'Semente de Girassol', calories: 584, protein: 21, carbs: 20, fat: 51, fiber: 8.6 },
-    ],
-    'Suplementos e Whey': [
-      { name: 'Whey Protein Concentrado', calories: 400, protein: 80, carbs: 8, fat: 5, fiber: 0 },
-      { name: 'Whey Protein Isolado', calories: 370, protein: 90, carbs: 2, fat: 1, fiber: 0 },
-      { name: 'Whey Protein Hidrolisado', calories: 380, protein: 90, carbs: 3, fat: 1.5, fiber: 0 },
-      { name: 'Caseína', calories: 360, protein: 78, carbs: 10, fat: 1.5, fiber: 0 },
-      { name: 'Albumina', calories: 380, protein: 81, carbs: 3, fat: 0.1, fiber: 0 },
-      { name: 'Creatina', calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-      { name: 'BCAA', calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-      { name: 'Maltodextrina', calories: 380, protein: 0, carbs: 95, fat: 0, fiber: 0 },
-      { name: 'Dextrose', calories: 380, protein: 0, carbs: 100, fat: 0, fiber: 0 },
-      { name: 'Hipercalórico (Mass Gainer)', calories: 380, protein: 15, carbs: 75, fat: 3, fiber: 2 },
-    ],
-    'Bebidas': [
-      { name: 'Água (200ml)', calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-      { name: 'Café sem Açúcar (200ml)', calories: 2, protein: 0.3, carbs: 0, fat: 0, fiber: 0 },
-      { name: 'Chá Verde (200ml)', calories: 1, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-      { name: 'Suco de Laranja Natural (200ml)', calories: 90, protein: 1.4, carbs: 21, fat: 0.4, fiber: 0.4 },
-      { name: 'Leite Integral (200ml)', calories: 122, protein: 6.4, carbs: 9.6, fat: 6.6, fiber: 0 },
-      { name: 'Leite Desnatado (200ml)', calories: 68, protein: 6.8, carbs: 10, fat: 0.2, fiber: 0 },
-      { name: 'Água de Coco (200ml)', calories: 38, protein: 0.6, carbs: 8.8, fat: 0, fiber: 0 },
+      { name: 'Azeite de Oliva', calories: 884, protein: 0, carbs: 0, fat: 100 },
+      { name: 'Castanha do Pará', calories: 656, protein: 14, carbs: 12, fat: 66 },
+      { name: 'Amendoim', calories: 567, protein: 26, carbs: 16, fat: 49 },
     ]
   }
 
   const getMealIcon = (mealName) => {
-    const icons = {
-      'Café da Manhã': faCoffee,
-      'Lanche da Manhã': faAppleAlt,
-      'Almoço': faUtensils,
-      'Lanche da Tarde': faCookie,
-      'Pré-Treino': faDrumstickBite,
-      'Jantar': faUtensils,
-      'Ceia': faCheese
-    }
-    return icons[mealName] || faUtensils
+    const lowerName = mealName.toLowerCase()
+    if (lowerName.includes('café') || lowerName.includes('manhã')) return faCoffee
+    if (lowerName.includes('almoço')) return faUtensils
+    if (lowerName.includes('jantar')) return faUtensils
+    if (lowerName.includes('lanche')) return faCookie
+    if (lowerName.includes('pré') || lowerName.includes('treino')) return faDrumstickBite
+    return faUtensils
   }
 
-  const handleOpenFoodModal = (mealName) => {
-    setCurrentMeal(mealName)
+  // NOVO: Adicionar refeição
+  const handleAddMeal = () => {
+    const newMeal = {
+      id: Date.now().toString(),
+      name: 'Nova Refeição',
+      foods: [],
+      alternatives: []
+    }
+    setSelectedMeals([...selectedMeals, newMeal])
+  }
+
+  // NOVO: Remover refeição
+  const handleRemoveMeal = (mealId) => {
+    if (selectedMeals.length <= 1) {
+      alert('Você precisa ter pelo menos uma refeição!')
+      return
+    }
+    if (confirm('Tem certeza que deseja remover esta refeição?')) {
+      setSelectedMeals(selectedMeals.filter(m => m.id !== mealId))
+    }
+  }
+
+  // NOVO: Iniciar edição de nome
+  const handleStartEditMealName = (meal) => {
+    setEditingMealId(meal.id)
+    setEditingMealName(meal.name)
+  }
+
+  // NOVO: Salvar nome editado
+  const handleSaveMealName = () => {
+    if (!editingMealName.trim()) {
+      alert('O nome da refeição não pode estar vazio')
+      return
+    }
+    setSelectedMeals(selectedMeals.map(m =>
+      m.id === editingMealId ? { ...m, name: editingMealName } : m
+    ))
+    setEditingMealId(null)
+    setEditingMealName('')
+  }
+
+  // NOVO: Cancelar edição
+  const handleCancelEditMealName = () => {
+    setEditingMealId(null)
+    setEditingMealName('')
+  }
+
+  // NOVO: Toggle alternativas
+  const toggleAlternatives = (mealId) => {
+    setExpandedAlternatives({
+      ...expandedAlternatives,
+      [mealId]: !expandedAlternatives[mealId]
+    })
+  }
+
+  const handleOpenFoodModal = (mealId, isAlternative = false) => {
+    setCurrentMealId(mealId)
+    setIsAddingAlternative(isAlternative)
     setShowFoodModal(true)
     setSearchTerm('')
     setSelectedCategory('all')
@@ -227,39 +193,75 @@ export default function CriarDieta() {
     const foodWithPortion = {
       ...food,
       id: Date.now() + Math.random(),
-      portion: 100 // Default 100g
+      portion: 100
     }
-    setSelectedMeals({
-      ...selectedMeals,
-      [currentMeal]: [...selectedMeals[currentMeal], foodWithPortion]
-    })
+
+    setSelectedMeals(selectedMeals.map(meal => {
+      if (meal.id === currentMealId) {
+        if (isAddingAlternative) {
+          return { ...meal, alternatives: [...meal.alternatives, foodWithPortion] }
+        } else {
+          return { ...meal, foods: [...meal.foods, foodWithPortion] }
+        }
+      }
+      return meal
+    }))
+
+    setShowFoodModal(false)
   }
 
-  const handleRemoveFood = (mealName, foodId) => {
-    setSelectedMeals({
-      ...selectedMeals,
-      [mealName]: selectedMeals[mealName].filter(f => f.id !== foodId)
-    })
+  const handleRemoveFood = (mealId, foodId, isAlternative = false) => {
+    setSelectedMeals(selectedMeals.map(meal => {
+      if (meal.id === mealId) {
+        if (isAlternative) {
+          return { ...meal, alternatives: meal.alternatives.filter(f => f.id !== foodId) }
+        } else {
+          return { ...meal, foods: meal.foods.filter(f => f.id !== foodId) }
+        }
+      }
+      return meal
+    }))
   }
 
-  const handleUpdatePortion = (mealName, foodId, newPortion) => {
-    setSelectedMeals({
-      ...selectedMeals,
-      [mealName]: selectedMeals[mealName].map(f =>
-        f.id === foodId ? { ...f, portion: parseFloat(newPortion) || 0 } : f
-      )
-    })
+  const handleUpdatePortion = (mealId, foodId, newPortion, isAlternative = false) => {
+    setSelectedMeals(selectedMeals.map(meal => {
+      if (meal.id === mealId) {
+        if (isAlternative) {
+          return {
+            ...meal,
+            alternatives: meal.alternatives.map(f =>
+              f.id === foodId ? { ...f, portion: parseFloat(newPortion) || 0 } : f
+            )
+          }
+        } else {
+          return {
+            ...meal,
+            foods: meal.foods.map(f =>
+              f.id === foodId ? { ...f, portion: parseFloat(newPortion) || 0 } : f
+            )
+          }
+        }
+      }
+      return meal
+    }))
   }
 
-  const handleDuplicateFood = (mealName, food) => {
+  const handleDuplicateFood = (mealId, food, isAlternative = false) => {
     const duplicatedFood = {
       ...food,
       id: Date.now() + Math.random()
     }
-    setSelectedMeals({
-      ...selectedMeals,
-      [mealName]: [...selectedMeals[mealName], duplicatedFood]
-    })
+
+    setSelectedMeals(selectedMeals.map(meal => {
+      if (meal.id === mealId) {
+        if (isAlternative) {
+          return { ...meal, alternatives: [...meal.alternatives, duplicatedFood] }
+        } else {
+          return { ...meal, foods: [...meal.foods, duplicatedFood] }
+        }
+      }
+      return meal
+    }))
   }
 
   const calculateMealTotals = (foods) => {
@@ -276,8 +278,8 @@ export default function CriarDieta() {
 
   const calculateDailyTotals = () => {
     let dailyTotals = { calories: 0, protein: 0, carbs: 0, fat: 0 }
-    Object.values(selectedMeals).forEach(mealFoods => {
-      const mealTotals = calculateMealTotals(mealFoods)
+    selectedMeals.forEach(meal => {
+      const mealTotals = calculateMealTotals(meal.foods)
       dailyTotals.calories += mealTotals.calories
       dailyTotals.protein += mealTotals.protein
       dailyTotals.carbs += mealTotals.carbs
@@ -288,106 +290,41 @@ export default function CriarDieta() {
 
   const handleSaveDiet = () => {
     if (!dietName.trim()) {
-      alert('Por favor, dê um nome para a dieta!')
+      alert('Por favor, dê um nome à dieta')
       return
     }
 
-    const totalFoods = Object.values(selectedMeals).reduce((sum, foods) => sum + foods.length, 0)
+    const totalFoods = selectedMeals.reduce((sum, meal) => sum + meal.foods.length, 0)
+
     if (totalFoods === 0) {
-      alert('Por favor, adicione pelo menos um alimento à dieta!')
+      alert('Adicione pelo menos um alimento à dieta')
       return
     }
 
     const dailyTotals = calculateDailyTotals()
-    alert(`Dieta "${dietName}" salva com sucesso!\n\nTotais diários:\nCalorias: ${dailyTotals.calories.toFixed(0)} kcal\nProteína: ${dailyTotals.protein.toFixed(1)}g\nCarboidratos: ${dailyTotals.carbs.toFixed(1)}g\nGorduras: ${dailyTotals.fat.toFixed(1)}g`)
+    alert(`Dieta "${dietName}" salva com sucesso!\n${selectedMeals.length} refeições\n${totalFoods} alimentos\n${dailyTotals.calories.toFixed(0)} kcal totais`)
     router.push('/personal/dietas')
   }
 
-  // Generate smart shopping list
-  const generateShoppingList = () => {
-    const allFoods = Object.values(selectedMeals).flat()
-
-    if (allFoods.length === 0) {
-      alert('Adicione alimentos à dieta antes de gerar a lista de compras!')
-      return
-    }
-
-    // Group and sum quantities by food name and category
-    const groupedFoods = {}
-
-    allFoods.forEach(food => {
-      if (!groupedFoods[food.category]) {
-        groupedFoods[food.category] = {}
-      }
-
-      if (!groupedFoods[food.category][food.name]) {
-        groupedFoods[food.category][food.name] = {
-          ...food,
-          totalPortion: 0
-        }
-      }
-
-      groupedFoods[food.category][food.name].totalPortion += food.portion
-    })
-
-    return groupedFoods
-  }
-
-  const handleGenerateShoppingList = () => {
-    setShowShoppingList(true)
-    setCheckedItems({})
-  }
-
-  const toggleItemCheck = (category, foodName) => {
-    const key = `${category}-${foodName}`
-    setCheckedItems({
-      ...checkedItems,
-      [key]: !checkedItems[key]
-    })
-  }
-
-  const copyShoppingListToClipboard = () => {
-    const shoppingList = generateShoppingList()
-    let text = `📋 LISTA DE COMPRAS - ${dietName || 'Dieta'}\n\n`
-
-    Object.entries(shoppingList).forEach(([category, foods]) => {
-      text += `\n📦 ${category}\n`
-      text += '─'.repeat(40) + '\n'
-      Object.entries(foods).forEach(([name, food]) => {
-        const checked = checkedItems[`${category}-${name}`]
-        text += `${checked ? '✓' : '☐'} ${name} - ${food.totalPortion.toFixed(0)}g\n`
-      })
-    })
-
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Lista de compras copiada para a área de transferência!')
-    }).catch(() => {
-      alert('Erro ao copiar. Tente novamente.')
-    })
-  }
-
-  // Filter foods based on search and category
   const getFilteredFoods = () => {
     let allFoods = []
     const categories = selectedCategory === 'all' ? Object.keys(foodDatabase) : [selectedCategory]
 
     categories.forEach(category => {
-      foodDatabase[category].forEach(food => {
-        allFoods.push({ ...food, category })
+      const foods = foodDatabase[category] || []
+      foods.forEach(food => {
+        if (food.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+          allFoods.push({ ...food, category })
+        }
       })
     })
-
-    if (searchTerm) {
-      allFoods = allFoods.filter(food =>
-        food.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
 
     return allFoods
   }
 
   const dailyTotals = calculateDailyTotals()
   const calorieProgress = (dailyTotals.calories / targetCalories) * 100
+  const filteredFoods = getFilteredFoods()
 
   return (
     <Layout userType="personal">
@@ -397,87 +334,113 @@ export default function CriarDieta() {
             <FontAwesomeIcon icon={faArrowLeft} />
             Voltar
           </button>
-          <div className={styles.headerInfo}>
+          <div>
             <h1>Criar Nova Dieta</h1>
-            <p>Monte uma dieta completa e personalizada para seu aluno</p>
+            <p>Monte uma dieta personalizada com alimentos da nossa biblioteca</p>
           </div>
-          <div className={styles.actions}>
-            <button className={styles.secondaryButton} onClick={handleGenerateShoppingList}>
-              <FontAwesomeIcon icon={faShoppingCart} />
-              Lista de Compras
-            </button>
-            <button className={styles.saveButton} onClick={handleSaveDiet}>
-              <FontAwesomeIcon icon={faSave} />
-              Salvar Dieta
-            </button>
-          </div>
+          <button className={styles.saveButton} onClick={handleSaveDiet}>
+            <FontAwesomeIcon icon={faSave} />
+            Salvar Dieta
+          </button>
         </div>
 
         <div className={styles.content}>
-          <div className={styles.main}>
+          <div className={styles.mainPanel}>
             <div className={styles.card}>
-              <div className={styles.formGroup}>
-                <label>Nome da Dieta</label>
+              <h3>Informações da Dieta</h3>
+              <div className={styles.formRow}>
                 <input
                   type="text"
-                  placeholder="Ex: Dieta de Ganho de Massa - 2500 kcal"
+                  placeholder="Nome da dieta (Ex: Dieta Hipertrofia 3000kcal)"
                   value={dietName}
                   onChange={(e) => setDietName(e.target.value)}
+                  className={styles.inputLarge}
                 />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Meta Calórica Diária</label>
                 <input
                   type="number"
                   placeholder="2000"
                   value={targetCalories}
                   onChange={(e) => setTargetCalories(parseFloat(e.target.value) || 0)}
+                  className={styles.inputSmall}
                 />
               </div>
             </div>
 
-            {Object.keys(selectedMeals).map((mealName) => (
-              <div key={mealName} className={styles.mealCard}>
+            {selectedMeals.map((meal) => (
+              <div key={meal.id} className={styles.mealCard}>
                 <div className={styles.mealHeader}>
                   <div className={styles.mealTitle}>
                     <span className={styles.mealIcon}>
-                      <FontAwesomeIcon icon={getMealIcon(mealName)} />
+                      <FontAwesomeIcon icon={getMealIcon(meal.name)} />
                     </span>
-                    <h3>{mealName}</h3>
-                    {selectedMeals[mealName].length > 0 && (
+
+                    {editingMealId === meal.id ? (
+                      <div className={styles.editingContainer}>
+                        <input
+                          type="text"
+                          value={editingMealName}
+                          onChange={(e) => setEditingMealName(e.target.value)}
+                          className={styles.editInput}
+                          autoFocus
+                          onKeyPress={(e) => e.key === 'Enter' && handleSaveMealName()}
+                        />
+                        <button onClick={handleSaveMealName} className={styles.iconButtonSmall}>
+                          <FontAwesomeIcon icon={faCheck} />
+                        </button>
+                        <button onClick={handleCancelEditMealName} className={styles.iconButtonSmall}>
+                          <FontAwesomeIcon icon={faTimes} />
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <h3>{meal.name}</h3>
+                        <button
+                          onClick={() => handleStartEditMealName(meal)}
+                          className={styles.editMealButton}
+                          title="Editar nome"
+                        >
+                          <FontAwesomeIcon icon={faPen} />
+                        </button>
+                      </>
+                    )}
+
+                    {meal.foods.length > 0 && (
                       <span className={styles.foodCount}>
-                        {selectedMeals[mealName].length} {selectedMeals[mealName].length === 1 ? 'item' : 'itens'}
+                        {meal.foods.length} {meal.foods.length === 1 ? 'item' : 'itens'}
                       </span>
                     )}
                   </div>
-                  {selectedMeals[mealName].length > 0 && (
-                    <div className={styles.mealMacros}>
-                      {(() => {
-                        const totals = calculateMealTotals(selectedMeals[mealName])
-                        return (
-                          <>
-                            <span className={styles.macro}>
-                              {totals.calories.toFixed(0)} kcal
-                            </span>
-                            <span className={styles.macro}>
-                              P: {totals.protein.toFixed(1)}g
-                            </span>
-                            <span className={styles.macro}>
-                              C: {totals.carbs.toFixed(1)}g
-                            </span>
-                            <span className={styles.macro}>
-                              G: {totals.fat.toFixed(1)}g
-                            </span>
-                          </>
-                        )
-                      })()}
-                    </div>
-                  )}
+
+                  <div className={styles.mealActions}>
+                    {meal.foods.length > 0 && (
+                      <div className={styles.mealMacros}>
+                        {(() => {
+                          const totals = calculateMealTotals(meal.foods)
+                          return (
+                            <>
+                              <span>{totals.calories.toFixed(0)} kcal</span>
+                              <span>P: {totals.protein.toFixed(1)}g</span>
+                              <span>C: {totals.carbs.toFixed(1)}g</span>
+                              <span>G: {totals.fat.toFixed(1)}g</span>
+                            </>
+                          )
+                        })()}
+                      </div>
+                    )}
+
+                    <button
+                      className={styles.deleteMealButton}
+                      onClick={() => handleRemoveMeal(meal.id)}
+                      title="Excluir refeição"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </div>
                 </div>
 
-                {selectedMeals[mealName].length > 0 && (
+                {meal.foods.length > 0 && (
                   <div className={styles.foodsList}>
-                    {selectedMeals[mealName].map((food) => (
+                    {meal.foods.map((food) => (
                       <div key={food.id} className={styles.foodItem}>
                         <div className={styles.foodInfo}>
                           <div className={styles.foodName}>{food.name}</div>
@@ -492,20 +455,20 @@ export default function CriarDieta() {
                           <input
                             type="number"
                             value={food.portion}
-                            onChange={(e) => handleUpdatePortion(mealName, food.id, e.target.value)}
+                            onChange={(e) => handleUpdatePortion(meal.id, food.id, e.target.value, false)}
                             className={styles.portionInput}
                           />
                           <span className={styles.unit}>g</span>
                           <button
                             className={styles.iconButton}
-                            onClick={() => handleDuplicateFood(mealName, food)}
+                            onClick={() => handleDuplicateFood(meal.id, food, false)}
                             title="Duplicar"
                           >
                             <FontAwesomeIcon icon={faCopy} />
                           </button>
                           <button
                             className={`${styles.iconButton} ${styles.danger}`}
-                            onClick={() => handleRemoveFood(mealName, food.id)}
+                            onClick={() => handleRemoveFood(meal.id, food.id, false)}
                             title="Remover"
                           >
                             <FontAwesomeIcon icon={faTrash} />
@@ -518,13 +481,86 @@ export default function CriarDieta() {
 
                 <button
                   className={styles.addFoodButton}
-                  onClick={() => handleOpenFoodModal(mealName)}
+                  onClick={() => handleOpenFoodModal(meal.id, false)}
                 >
                   <FontAwesomeIcon icon={faPlus} />
                   Adicionar Alimento
                 </button>
+
+                {/* NOVO: Seção de Alternativas */}
+                <div className={styles.alternativesSection}>
+                  <button
+                    className={styles.alternativesToggle}
+                    onClick={() => toggleAlternatives(meal.id)}
+                  >
+                    <FontAwesomeIcon icon={expandedAlternatives[meal.id] ? faChevronUp : faChevronDown} />
+                    <span>Opcionais / Alternativas</span>
+                    {meal.alternatives.length > 0 && (
+                      <span className={styles.alternativesBadge}>{meal.alternatives.length}</span>
+                    )}
+                  </button>
+
+                  {expandedAlternatives[meal.id] && (
+                    <div className={styles.alternativesContent}>
+                      {meal.alternatives.length > 0 && (
+                        <div className={styles.alternativesList}>
+                          {meal.alternatives.map((food) => (
+                            <div key={food.id} className={styles.foodItem}>
+                              <div className={styles.foodInfo}>
+                                <div className={styles.foodName}>{food.name}</div>
+                                <div className={styles.foodMacros}>
+                                  {((food.calories * food.portion) / 100).toFixed(0)} kcal •
+                                  P: {((food.protein * food.portion) / 100).toFixed(1)}g •
+                                  C: {((food.carbs * food.portion) / 100).toFixed(1)}g •
+                                  G: {((food.fat * food.portion) / 100).toFixed(1)}g
+                                </div>
+                              </div>
+                              <div className={styles.foodControls}>
+                                <input
+                                  type="number"
+                                  value={food.portion}
+                                  onChange={(e) => handleUpdatePortion(meal.id, food.id, e.target.value, true)}
+                                  className={styles.portionInput}
+                                />
+                                <span className={styles.unit}>g</span>
+                                <button
+                                  className={styles.iconButton}
+                                  onClick={() => handleDuplicateFood(meal.id, food, true)}
+                                  title="Duplicar"
+                                >
+                                  <FontAwesomeIcon icon={faCopy} />
+                                </button>
+                                <button
+                                  className={`${styles.iconButton} ${styles.danger}`}
+                                  onClick={() => handleRemoveFood(meal.id, food.id, true)}
+                                  title="Remover"
+                                >
+                                  <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <button
+                        className={styles.addAlternativeButton}
+                        onClick={() => handleOpenFoodModal(meal.id, true)}
+                      >
+                        <FontAwesomeIcon icon={faPlus} />
+                        Adicionar Alternativa
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
+
+            {/* NOVO: Botão Adicionar Refeição */}
+            <button className={styles.addMealButton} onClick={handleAddMeal}>
+              <FontAwesomeIcon icon={faPlus} />
+              Adicionar Refeição
+            </button>
           </div>
 
           <div className={styles.sidebar}>
@@ -576,142 +612,64 @@ export default function CriarDieta() {
         </div>
       </div>
 
+      {/* Modal de Adicionar Alimento */}
       {showFoodModal && (
         <div className={styles.modalOverlay} onClick={() => setShowFoodModal(false)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <h2>Adicionar Alimento - {currentMeal}</h2>
-              <button className={styles.closeButton} onClick={() => setShowFoodModal(false)}>
+              <div>
+                <h2>{isAddingAlternative ? 'Adicionar Alternativa' : 'Adicionar Alimento'}</h2>
+                <p>Selecione um alimento da nossa biblioteca</p>
+              </div>
+              <button className={styles.modalClose} onClick={() => setShowFoodModal(false)}>
                 <FontAwesomeIcon icon={faTimes} />
               </button>
             </div>
-            <div className={styles.modalContent}>
-              <div className={styles.searchSection}>
+
+            <div className={styles.modalFilters}>
+              <div className={styles.searchBox}>
+                <FontAwesomeIcon icon={faSearch} />
                 <input
                   type="text"
                   placeholder="Buscar alimento..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className={styles.searchInput}
+                  autoFocus
                 />
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className={styles.filterSelect}
-                >
-                  <option value="all">Todas as Categorias</option>
-                  {Object.keys(foodDatabase).map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
               </div>
-              <div className={styles.foodsGrid}>
-                {getFilteredFoods().map((food, index) => (
-                  <div
-                    key={index}
-                    className={styles.foodCard}
-                    onClick={() => {
-                      handleAddFood(food)
-                      setShowFoodModal(false)
-                    }}
-                  >
-                    <h4>{food.name}</h4>
-                    <div className={styles.foodCategory}>{food.category}</div>
-                    <div className={styles.foodNutrition}>
-                      <div className={styles.nutritionItem}>
-                        <span className={styles.nutritionLabel}>Calorias</span>
-                        <span className={styles.nutritionValue}>{food.calories} kcal</span>
-                      </div>
-                      <div className={styles.nutritionGrid}>
-                        <div className={styles.nutritionItem}>
-                          <span className={styles.nutritionLabel}>Prot.</span>
-                          <span className={styles.nutritionValue}>{food.protein}g</span>
-                        </div>
-                        <div className={styles.nutritionItem}>
-                          <span className={styles.nutritionLabel}>Carb.</span>
-                          <span className={styles.nutritionValue}>{food.carbs}g</span>
-                        </div>
-                        <div className={styles.nutritionItem}>
-                          <span className={styles.nutritionLabel}>Gord.</span>
-                          <span className={styles.nutritionValue}>{food.fat}g</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className={styles.per100g}>por 100g</div>
-                  </div>
+
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className={styles.categorySelect}
+              >
+                <option value="all">Todas as categorias</option>
+                {Object.keys(foodDatabase).map(category => (
+                  <option key={category} value={category}>{category}</option>
                 ))}
-              </div>
-              {getFilteredFoods().length === 0 && (
+              </select>
+            </div>
+
+            <div className={styles.foodGrid}>
+              {filteredFoods.length === 0 ? (
                 <div className={styles.noResults}>
                   <p>Nenhum alimento encontrado</p>
                 </div>
+              ) : (
+                filteredFoods.map((food, index) => (
+                  <div
+                    key={index}
+                    className={styles.foodOption}
+                    onClick={() => handleAddFood(food)}
+                  >
+                    <div className={styles.foodOptionName}>{food.name}</div>
+                    <div className={styles.foodOptionMacros}>
+                      {food.calories} kcal • P: {food.protein}g • C: {food.carbs}g • G: {food.fat}g
+                    </div>
+                    <div className={styles.foodOptionCategory}>{food.category}</div>
+                  </div>
+                ))
               )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showShoppingList && (
-        <div className={styles.modalOverlay} onClick={() => setShowShoppingList(false)}>
-          <div className={styles.shoppingListModal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <div>
-                <h2>
-                  <FontAwesomeIcon icon={faShoppingCart} /> Lista de Compras
-                </h2>
-                <p className={styles.modalSubtitle}>
-                  Organize suas compras por categoria e marque os itens adquiridos
-                </p>
-              </div>
-              <button className={styles.closeButton} onClick={() => setShowShoppingList(false)}>
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-
-            <div className={styles.shoppingListActions}>
-              <button className={styles.copyButton} onClick={copyShoppingListToClipboard}>
-                <FontAwesomeIcon icon={faClipboard} />
-                Copiar Lista
-              </button>
-            </div>
-
-            <div className={styles.shoppingListContent}>
-              {Object.entries(generateShoppingList() || {}).map(([category, foods]) => (
-                <div key={category} className={styles.shoppingCategory}>
-                  <div className={styles.categoryHeader}>
-                    <h3>{category}</h3>
-                    <span className={styles.categoryCount}>
-                      {Object.keys(foods).length} {Object.keys(foods).length === 1 ? 'item' : 'itens'}
-                    </span>
-                  </div>
-                  <div className={styles.categoryItems}>
-                    {Object.entries(foods).map(([name, food]) => {
-                      const itemKey = `${category}-${name}`
-                      const isChecked = checkedItems[itemKey]
-
-                      return (
-                        <div
-                          key={name}
-                          className={`${styles.shoppingItem} ${isChecked ? styles.checked : ''}`}
-                          onClick={() => toggleItemCheck(category, name)}
-                        >
-                          <div className={styles.checkbox}>
-                            {isChecked && <FontAwesomeIcon icon={faCheck} />}
-                          </div>
-                          <div className={styles.itemInfo}>
-                            <div className={styles.itemName}>{name}</div>
-                            <div className={styles.itemQuantity}>
-                              {food.totalPortion >= 1000
-                                ? `${(food.totalPortion / 1000).toFixed(2)} kg`
-                                : `${food.totalPortion.toFixed(0)} g`}
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
