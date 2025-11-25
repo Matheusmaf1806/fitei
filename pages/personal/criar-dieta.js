@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -23,13 +23,22 @@ import {
   faClipboard,
   faChevronDown,
   faChevronUp,
-  faPen
+  faPen,
+  faInfoCircle,
+  faGripVertical,
+  faTrashAlt,
+  faHistory,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
+import Toast from '../../components/Toast'
+import { useToast } from '../../hooks/useToast'
 import styles from '../../styles/CriarDieta.module.css'
 
 export default function CriarDieta() {
   const router = useRouter()
+  const toast = useToast()
+
   const [dietName, setDietName] = useState('')
   const [targetCalories, setTargetCalories] = useState(2000)
 
@@ -54,6 +63,63 @@ export default function CriarDieta() {
   const [editingMealId, setEditingMealId] = useState(null)
   const [editingMealName, setEditingMealName] = useState('')
   const [expandedAlternatives, setExpandedAlternatives] = useState({})
+
+  // 🎯 MELHORIAS: Novos estados
+  const [draggedMealIndex, setDraggedMealIndex] = useState(null)
+  const [errors, setErrors] = useState({})
+  const [isSaving, setIsSaving] = useState(false)
+  const [recentFoods, setRecentFoods] = useState([])
+
+  // 🎯 MELHORIA: LocalStorage - Salvar rascunho e histórico
+  useEffect(() => {
+    const savedDraft = localStorage.getItem('diet-draft')
+    const savedRecent = localStorage.getItem('recent-foods')
+
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft)
+        if (draft.dietName) setDietName(draft.dietName)
+        if (draft.targetCalories) setTargetCalories(draft.targetCalories)
+        if (draft.selectedMeals) setSelectedMeals(draft.selectedMeals)
+        toast.info('Rascunho recuperado!', 2000)
+      } catch (e) {
+        console.error('Erro ao carregar rascunho:', e)
+      }
+    }
+
+    if (savedRecent) {
+      try {
+        setRecentFoods(JSON.parse(savedRecent))
+      } catch (e) {
+        console.error('Erro ao carregar recentes:', e)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    const draft = {
+      dietName,
+      targetCalories,
+      selectedMeals
+    }
+    localStorage.setItem('diet-draft', JSON.stringify(draft))
+  }, [dietName, targetCalories, selectedMeals])
+
+  // 🎯 MELHORIA: Atalhos de teclado
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && showFoodModal) {
+        setShowFoodModal(false)
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault()
+        handleSaveDiet()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showFoodModal, dietName, selectedMeals])
 
   // Database completo de alimentos
   const foodDatabase = {
@@ -207,6 +273,12 @@ export default function CriarDieta() {
       return meal
     }))
 
+    // 🎯 MELHORIA 16: Adicionar ao histórico de alimentos recentes
+    const newRecent = [food, ...recentFoods.filter(f => f.name !== food.name)].slice(0, 10)
+    setRecentFoods(newRecent)
+    localStorage.setItem('recent-foods', JSON.stringify(newRecent))
+
+    toast.success(`${food.name} adicionado!`, 2000)
     setShowFoodModal(false)
   }
 
@@ -288,22 +360,102 @@ export default function CriarDieta() {
     return dailyTotals
   }
 
-  const handleSaveDiet = () => {
+  // 🎯 MELHORIA 1 & 12: Validações visuais e de macros
+  const handleSaveDiet = async () => {
+    const newErrors = {}
+
     if (!dietName.trim()) {
-      alert('Por favor, dê um nome à dieta')
-      return
+      newErrors.dietName = 'Nome da dieta é obrigatório'
+      toast.error('Por favor, dê um nome à dieta')
     }
 
     const totalFoods = selectedMeals.reduce((sum, meal) => sum + meal.foods.length, 0)
 
     if (totalFoods === 0) {
-      alert('Adicione pelo menos um alimento à dieta')
+      newErrors.foods = 'Adicione pelo menos um alimento'
+      toast.error('Adicione pelo menos um alimento à dieta')
+    }
+
+    // 🎯 MELHORIA 12: Validar macros desbalanceados
+    const dailyTotals = calculateDailyTotals()
+    const proteinCalories = dailyTotals.protein * 4
+    const carbsCalories = dailyTotals.carbs * 4
+    const fatCalories = dailyTotals.fat * 9
+    const totalMacroCalories = proteinCalories + carbsCalories + fatCalories
+
+    if (totalMacroCalories > 0) {
+      const proteinPercent = (proteinCalories / totalMacroCalories) * 100
+      const carbsPercent = (carbsCalories / totalMacroCalories) * 100
+      const fatPercent = (fatCalories / totalMacroCalories) * 100
+
+      // Alertar se macros muito desbalanceados
+      if (proteinPercent < 10) {
+        toast.warning('⚠️ Proteína muito baixa (<10%)! Considere adicionar mais fontes proteicas.')
+      }
+      if (fatPercent < 15) {
+        toast.warning('⚠️ Gordura muito baixa (<15%)! Adicione gorduras saudáveis.')
+      }
+      if (carbsPercent > 70) {
+        toast.warning('⚠️ Carboidratos muito altos (>70%)! Considere balancear os macros.')
+      }
+    }
+
+    setErrors(newErrors)
+
+    if (Object.keys(newErrors).length > 0) {
       return
     }
 
-    const dailyTotals = calculateDailyTotals()
-    alert(`Dieta "${dietName}" salva com sucesso!\n${selectedMeals.length} refeições\n${totalFoods} alimentos\n${dailyTotals.calories.toFixed(0)} kcal totais`)
-    router.push('/personal/dietas')
+    setIsSaving(true)
+
+    // Simular salvamento
+    setTimeout(() => {
+      localStorage.removeItem('diet-draft')
+
+      toast.success(`Dieta "${dietName}" salva com sucesso! ${selectedMeals.length} refeições, ${totalFoods} alimentos, ${dailyTotals.calories.toFixed(0)} kcal totais`)
+
+      setTimeout(() => {
+        router.push('/personal/dietas')
+      }, 1500)
+    }, 1000)
+  }
+
+  // 🎯 MELHORIA 14: Limpar tudo
+  const handleClearAll = () => {
+    if (confirm('Tem certeza que deseja limpar tudo? Esta ação não pode ser desfeita.')) {
+      setDietName('')
+      setTargetCalories(2000)
+      setSelectedMeals([
+        { id: '1', name: 'Café da Manhã', foods: [], alternatives: [] },
+        { id: '2', name: 'Lanche da Manhã', foods: [], alternatives: [] },
+        { id: '3', name: 'Almoço', foods: [], alternatives: [] },
+      ])
+      localStorage.removeItem('diet-draft')
+      toast.info('Dieta limpa!')
+    }
+  }
+
+  // 🎯 MELHORIA 5: Drag & Drop para reordenar refeições
+  const handleMealDragStart = (index) => {
+    setDraggedMealIndex(index)
+  }
+
+  const handleMealDragOver = (e, index) => {
+    e.preventDefault()
+    if (draggedMealIndex === null || draggedMealIndex === index) return
+
+    const meals = [...selectedMeals]
+    const draggedMeal = meals[draggedMealIndex]
+    meals.splice(draggedMealIndex, 1)
+    meals.splice(index, 0, draggedMeal)
+
+    setSelectedMeals(meals)
+    setDraggedMealIndex(index)
+  }
+
+  const handleMealDragEnd = () => {
+    setDraggedMealIndex(null)
+    toast.info('Refeição reordenada!', 1500)
   }
 
   const getFilteredFoods = () => {
@@ -338,10 +490,23 @@ export default function CriarDieta() {
             <h1>Criar Nova Dieta</h1>
             <p>Monte uma dieta personalizada com alimentos da nossa biblioteca</p>
           </div>
-          <button className={styles.saveButton} onClick={handleSaveDiet}>
-            <FontAwesomeIcon icon={faSave} />
-            Salvar Dieta
-          </button>
+          <div className={styles.headerActions}>
+            <button
+              className={styles.btnDanger}
+              onClick={handleClearAll}
+              title="Limpar tudo"
+            >
+              <FontAwesomeIcon icon={faTrashAlt} />
+            </button>
+            <button
+              className={styles.saveButton}
+              onClick={handleSaveDiet}
+              disabled={isSaving}
+            >
+              <FontAwesomeIcon icon={faSave} />
+              {isSaving ? 'Salvando...' : 'Salvar Dieta'}
+            </button>
+          </div>
         </div>
 
         <div className={styles.content}>
@@ -349,25 +514,61 @@ export default function CriarDieta() {
             <div className={styles.card}>
               <h3>Informações da Dieta</h3>
               <div className={styles.formRow}>
-                <input
-                  type="text"
-                  placeholder="Nome da dieta (Ex: Dieta Hipertrofia 3000kcal)"
-                  value={dietName}
-                  onChange={(e) => setDietName(e.target.value)}
-                  className={styles.inputLarge}
-                />
-                <input
-                  type="number"
-                  placeholder="2000"
-                  value={targetCalories}
-                  onChange={(e) => setTargetCalories(parseFloat(e.target.value) || 0)}
-                  className={styles.inputSmall}
-                />
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>
+                    Nome da Dieta
+                    <span className={styles.required}>*</span>
+                    <span className={styles.tooltip} title="Dê um nome descritivo para esta dieta">
+                      <FontAwesomeIcon icon={faInfoCircle} />
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Dieta Hipertrofia 3000kcal"
+                    value={dietName}
+                    onChange={(e) => {
+                      setDietName(e.target.value)
+                      if (errors.dietName) {
+                        setErrors({...errors, dietName: null})
+                      }
+                    }}
+                    className={`${styles.inputLarge} ${errors.dietName ? styles.inputError : ''}`}
+                  />
+                  {errors.dietName && (
+                    <span className={styles.errorText}>{errors.dietName}</span>
+                  )}
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>
+                    Meta de Calorias
+                    <span className={styles.tooltip} title="Calorias diárias alvo">
+                      <FontAwesomeIcon icon={faInfoCircle} />
+                    </span>
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="2000"
+                    value={targetCalories}
+                    onChange={(e) => setTargetCalories(parseFloat(e.target.value) || 0)}
+                    className={styles.inputSmall}
+                    min="0"
+                  />
+                </div>
               </div>
             </div>
 
-            {selectedMeals.map((meal) => (
-              <div key={meal.id} className={styles.mealCard}>
+            {selectedMeals.map((meal, mealIndex) => (
+              <div
+                key={meal.id}
+                className={`${styles.mealCard} ${draggedMealIndex === mealIndex ? styles.dragging : ''}`}
+                draggable
+                onDragStart={() => handleMealDragStart(mealIndex)}
+                onDragOver={(e) => handleMealDragOver(e, mealIndex)}
+                onDragEnd={handleMealDragEnd}
+              >
+                <div className={styles.mealDragHandle} title="Arraste para reordenar refeições">
+                  <FontAwesomeIcon icon={faGripVertical} />
+                </div>
                 <div className={styles.mealHeader}>
                   <div className={styles.mealTitle}>
                     <span className={styles.mealIcon}>
@@ -626,6 +827,27 @@ export default function CriarDieta() {
               </button>
             </div>
 
+            {/* 🎯 MELHORIA 16: Histórico de Alimentos Recentes */}
+            {recentFoods.length > 0 && (
+              <div className={styles.recentSection}>
+                <h4>
+                  <FontAwesomeIcon icon={faHistory} />
+                  Adicionados Recentemente
+                </h4>
+                <div className={styles.recentFoodsGrid}>
+                  {recentFoods.slice(0, 5).map((food, index) => (
+                    <div
+                      key={index}
+                      className={styles.recentFoodChip}
+                      onClick={() => handleAddFood(food)}
+                    >
+                      {food.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className={styles.modalFilters}>
               <div className={styles.searchBox}>
                 <FontAwesomeIcon icon={faSearch} />
@@ -674,6 +896,17 @@ export default function CriarDieta() {
           </div>
         </div>
       )}
+
+      {/* Toast Notifications */}
+      {toast.toasts.map((t) => (
+        <Toast
+          key={t.id}
+          message={t.message}
+          type={t.type}
+          duration={t.duration}
+          onClose={() => toast.removeToast(t.id)}
+        />
+      ))}
     </Layout>
   )
 }

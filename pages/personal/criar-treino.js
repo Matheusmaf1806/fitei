@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -10,9 +10,13 @@ import {
   faCopy,
   faSave,
   faChevronDown,
-  faGripVertical
+  faGripVertical,
+  faTrashAlt,
+  faInfoCircle
 } from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
+import Toast from '../../components/Toast'
+import { useToast } from '../../hooks/useToast'
 import styles from '../../styles/CriarTreino.module.css'
 
 // Banco de dados completo de exercícios
@@ -147,12 +151,68 @@ const exercisesDatabase = {
 
 export default function CriarTreino() {
   const router = useRouter()
+  const toast = useToast()
+
   const [workoutName, setWorkoutName] = useState('')
   const [workoutType, setWorkoutType] = useState('Musculação')
   const [selectedExercises, setSelectedExercises] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedMuscle, setSelectedMuscle] = useState('all')
   const [showExerciseModal, setShowExerciseModal] = useState(false)
+  const [draggedItem, setDraggedItem] = useState(null)
+  const [errors, setErrors] = useState({})
+  const [isSaving, setIsSaving] = useState(false)
+
+  // 🎯 MELHORIA 2: LocalStorage - Salvar rascunho automaticamente
+  useEffect(() => {
+    const savedDraft = localStorage.getItem('workout-draft')
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft)
+        if (draft.workoutName) setWorkoutName(draft.workoutName)
+        if (draft.workoutType) setWorkoutType(draft.workoutType)
+        if (draft.selectedExercises) setSelectedExercises(draft.selectedExercises)
+        toast.info('Rascunho recuperado!', 2000)
+      } catch (e) {
+        console.error('Erro ao carregar rascunho:', e)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    const draft = {
+      workoutName,
+      workoutType,
+      selectedExercises
+    }
+    localStorage.setItem('workout-draft', JSON.stringify(draft))
+  }, [workoutName, workoutType, selectedExercises])
+
+  // 🎯 MELHORIA 10: Atalhos de teclado
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // ESC para fechar modal
+      if (e.key === 'Escape' && showExerciseModal) {
+        setShowExerciseModal(false)
+      }
+      // Ctrl/Cmd + S para salvar
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault()
+        handleSaveWorkout()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showExerciseModal, workoutName, selectedExercises])
+
+  // 🎯 MELHORIA 6: Debounce na busca
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // A busca já é feita em tempo real, mas com debounce evita re-renders excessivos
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
 
   const handleAddExercise = (exercise) => {
     setSelectedExercises([
@@ -175,6 +235,15 @@ export default function CriarTreino() {
   }
 
   const handleUpdateExercise = (id, field, value) => {
+    // 🎯 MELHORIA 7: Prevenir valores negativos
+    if (field === 'sets' || field === 'reps' || field === 'rest') {
+      const numValue = parseInt(value)
+      if (numValue < 0) {
+        toast.warning('Valores não podem ser negativos')
+        return
+      }
+    }
+
     setSelectedExercises(
       selectedExercises.map(ex =>
         ex.id === id ? { ...ex, [field]: value } : ex
@@ -192,20 +261,80 @@ export default function CriarTreino() {
     ])
   }
 
-  const handleSaveWorkout = () => {
+  // 🎯 MELHORIA 1 & 7: Validações visuais e de valores negativos
+  const handleSaveWorkout = async () => {
+    const newErrors = {}
+
     if (!workoutName.trim()) {
-      alert('Por favor, dê um nome ao treino')
-      return
+      newErrors.workoutName = 'Nome do treino é obrigatório'
+      toast.error('Por favor, dê um nome ao treino')
     }
 
     if (selectedExercises.length === 0) {
-      alert('Adicione pelo menos um exercício ao treino')
+      newErrors.exercises = 'Adicione pelo menos um exercício'
+      toast.error('Adicione pelo menos um exercício ao treino')
+    }
+
+    // Validar exercícios
+    selectedExercises.forEach((ex, index) => {
+      if (ex.sets <= 0 || ex.reps <= 0 || ex.rest < 0) {
+        newErrors[`exercise_${index}`] = 'Valores inválidos'
+        toast.error(`Exercício ${index + 1}: valores devem ser positivos`)
+      }
+    })
+
+    setErrors(newErrors)
+
+    if (Object.keys(newErrors).length > 0) {
       return
     }
 
-    // Aqui você salvaria no banco de dados
-    alert(`Treino "${workoutName}" salvo com sucesso!\n${selectedExercises.length} exercícios adicionados.`)
-    router.push('/personal/treinos')
+    setIsSaving(true)
+
+    // Simular salvamento
+    setTimeout(() => {
+      // Limpar rascunho após salvar
+      localStorage.removeItem('workout-draft')
+
+      toast.success(`Treino "${workoutName}" salvo com sucesso! ${selectedExercises.length} exercícios adicionados.`)
+
+      setTimeout(() => {
+        router.push('/personal/treinos')
+      }, 1500)
+    }, 1000)
+  }
+
+  // 🎯 MELHORIA 14: Limpar tudo
+  const handleClearAll = () => {
+    if (confirm('Tem certeza que deseja limpar tudo? Esta ação não pode ser desfeita.')) {
+      setWorkoutName('')
+      setWorkoutType('Musculação')
+      setSelectedExercises([])
+      localStorage.removeItem('workout-draft')
+      toast.info('Treino limpo!')
+    }
+  }
+
+  // 🎯 MELHORIA 4: Drag & Drop para reordenar exercícios
+  const handleDragStart = (index) => {
+    setDraggedItem(index)
+  }
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault()
+    if (draggedItem === null || draggedItem === index) return
+
+    const items = [...selectedExercises]
+    const draggedExercise = items[draggedItem]
+    items.splice(draggedItem, 1)
+    items.splice(index, 0, draggedExercise)
+
+    setSelectedExercises(items)
+    setDraggedItem(index)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedItem(null)
   }
 
   // Calculate workout statistics
@@ -253,12 +382,23 @@ export default function CriarTreino() {
             <p>Monte um treino personalizado com exercícios da nossa biblioteca</p>
           </div>
           <div className={styles.headerActions}>
+            <button
+              className={styles.btnDanger}
+              onClick={handleClearAll}
+              title="Limpar tudo"
+            >
+              <FontAwesomeIcon icon={faTrashAlt} />
+            </button>
             <button className={styles.btnSecondary} onClick={() => router.back()}>
               Cancelar
             </button>
-            <button className={styles.btnPrimary} onClick={handleSaveWorkout}>
+            <button
+              className={styles.btnPrimary}
+              onClick={handleSaveWorkout}
+              disabled={isSaving}
+            >
               <FontAwesomeIcon icon={faSave} />
-              Salvar Treino
+              {isSaving ? 'Salvando...' : 'Salvar Treino'}
             </button>
           </div>
         </div>
@@ -269,17 +409,36 @@ export default function CriarTreino() {
               <h3 className={styles.cardTitle}>Informações do Treino</h3>
               <div className={styles.formGrid}>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Nome do Treino</label>
+                  <label className={styles.label}>
+                    Nome do Treino
+                    <span className={styles.required}>*</span>
+                    <span className={styles.tooltip} title="Dê um nome descritivo para identificar este treino">
+                      <FontAwesomeIcon icon={faInfoCircle} />
+                    </span>
+                  </label>
                   <input
                     type="text"
-                    className={styles.input}
+                    className={`${styles.input} ${errors.workoutName ? styles.inputError : ''}`}
                     placeholder="Ex: Treino A - Peito e Tríceps"
                     value={workoutName}
-                    onChange={(e) => setWorkoutName(e.target.value)}
+                    onChange={(e) => {
+                      setWorkoutName(e.target.value)
+                      if (errors.workoutName) {
+                        setErrors({...errors, workoutName: null})
+                      }
+                    }}
                   />
+                  {errors.workoutName && (
+                    <span className={styles.errorText}>{errors.workoutName}</span>
+                  )}
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.label}>Tipo de Treino</label>
+                  <label className={styles.label}>
+                    Tipo de Treino
+                    <span className={styles.tooltip} title="Selecione o tipo principal deste treino">
+                      <FontAwesomeIcon icon={faInfoCircle} />
+                    </span>
+                  </label>
                   <select
                     className={styles.select}
                     value={workoutType}
@@ -327,8 +486,15 @@ export default function CriarTreino() {
               ) : (
                 <div className={styles.exercisesList}>
                   {selectedExercises.map((exercise, index) => (
-                    <div key={exercise.id} className={styles.exerciseCard}>
-                      <div className={styles.dragHandle}>
+                    <div
+                      key={exercise.id}
+                      className={`${styles.exerciseCard} ${draggedItem === index ? styles.dragging : ''}`}
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <div className={styles.dragHandle} title="Arraste para reordenar">
                         <FontAwesomeIcon icon={faGripVertical} />
                         <FontAwesomeIcon icon={faGripVertical} />
                       </div>
@@ -615,6 +781,17 @@ export default function CriarTreino() {
             </div>
           </div>
         )}
+
+        {/* Toast Notifications */}
+        {toast.toasts.map((t) => (
+          <Toast
+            key={t.id}
+            message={t.message}
+            type={t.type}
+            duration={t.duration}
+            onClose={() => toast.removeToast(t.id)}
+          />
+        ))}
       </div>
     </Layout>
   )

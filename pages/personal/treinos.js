@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -11,9 +11,18 @@ import {
   faPen,
   faCopy,
   faPersonSwimming,
-  faTimes
+  faTimes,
+  faSearch,
+  faFilter,
+  faSortAlphaDown,
+  faSortAlphaUp,
+  faSortNumericDown,
+  faEye,
+  faHeart
 } from '@fortawesome/free-solid-svg-icons'
 import Layout from '../../components/Layout'
+import Toast from '../../components/Toast'
+import { useToast } from '../../hooks/useToast'
 import styles from '../../styles/PersonalTreinos.module.css'
 
 const workoutTemplates = [
@@ -53,9 +62,31 @@ const workoutTemplates = [
 
 export default function PersonalTreinos() {
   const router = useRouter()
+  const toast = useToast()
+
   const [activeFilter, setActiveFilter] = useState('Todos')
   const [showAssignModal, setShowAssignModal] = useState(false)
   const [selectedWorkout, setSelectedWorkout] = useState(null)
+
+  // 🎯 MELHORIAS: Novos estados
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState('name') // name, students, exercises
+  const [sortOrder, setSortOrder] = useState('asc')
+  const [favorites, setFavorites] = useState([])
+  const [showPreviewModal, setShowPreviewModal] = useState(false)
+  const [previewWorkout, setPreviewWorkout] = useState(null)
+
+  // Carregar favoritos do localStorage
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('favorite-workouts')
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites))
+      } catch (e) {
+        console.error('Erro ao carregar favoritos:', e)
+      }
+    }
+  }, [])
 
   const handleCreateWorkout = () => {
     router.push('/personal/criar-treino')
@@ -67,8 +98,7 @@ export default function PersonalTreinos() {
   }
 
   const handleDuplicateWorkout = (template) => {
-    // Cria cópia do treino
-    alert(`Treino "${template.name}" duplicado com sucesso!\nNova cópia: "${template.name} (Cópia)"`)
+    toast.success(`Treino "${template.name}" duplicado com sucesso!`)
     // Aqui você salvaria no banco de dados
   }
 
@@ -78,7 +108,7 @@ export default function PersonalTreinos() {
   }
 
   const handleConfirmAssign = (students) => {
-    alert(`Treino "${selectedWorkout.name}" atribuído a ${students.length} aluno(s)`)
+    toast.success(`Treino "${selectedWorkout.name}" atribuído a ${students.length} aluno(s)`)
     setShowAssignModal(false)
   }
 
@@ -86,9 +116,51 @@ export default function PersonalTreinos() {
     router.push(`/personal/criar-treino?type=${type}`)
   }
 
-  const filteredTemplates = activeFilter === 'Todos'
-    ? workoutTemplates
-    : workoutTemplates.filter(t => t.type === activeFilter)
+  // 🎯 MELHORIA 20: Sistema de favoritos
+  const toggleFavorite = (workoutId) => {
+    const newFavorites = favorites.includes(workoutId)
+      ? favorites.filter(id => id !== workoutId)
+      : [...favorites, workoutId]
+
+    setFavorites(newFavorites)
+    localStorage.setItem('favorite-workouts', JSON.stringify(newFavorites))
+
+    const message = favorites.includes(workoutId)
+      ? 'Removido dos favoritos'
+      : 'Adicionado aos favoritos'
+    toast.info(message, 2000)
+  }
+
+  // 🎯 MELHORIA 18: Preview modal
+  const handlePreview = (workout) => {
+    setPreviewWorkout(workout)
+    setShowPreviewModal(true)
+  }
+
+  // 🎯 MELHORIA 8 & 17: Busca, filtros e ordenação
+  const filteredTemplates = workoutTemplates
+    .filter(t => {
+      // Filtro por tipo
+      if (activeFilter !== 'Todos' && t.type !== activeFilter) return false
+
+      // Busca por nome
+      if (searchTerm && !t.name.toLowerCase().includes(searchTerm.toLowerCase())) return false
+
+      return true
+    })
+    .sort((a, b) => {
+      let comparison = 0
+
+      if (sortBy === 'name') {
+        comparison = a.name.localeCompare(b.name)
+      } else if (sortBy === 'students') {
+        comparison = a.students - b.students
+      } else if (sortBy === 'exercises') {
+        comparison = a.exercises - b.exercises
+      }
+
+      return sortOrder === 'asc' ? comparison : -comparison
+    })
 
   return (
     <Layout userType="personal">
@@ -101,6 +173,37 @@ export default function PersonalTreinos() {
           <button className={styles.createBtn} onClick={handleCreateWorkout}>
             + Criar Novo Treino
           </button>
+        </div>
+
+        {/* 🎯 MELHORIA 8: Busca e Ordenação */}
+        <div className={styles.searchBar}>
+          <div className={styles.searchBox}>
+            <FontAwesomeIcon icon={faSearch} />
+            <input
+              type="text"
+              placeholder="Buscar treinos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className={styles.sortControls}>
+            <select
+              className={styles.sortSelect}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="name">Nome</option>
+              <option value="students">Alunos</option>
+              <option value="exercises">Exercícios</option>
+            </select>
+            <button
+              className={styles.sortButton}
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              title={`Ordenar ${sortOrder === 'asc' ? 'decrescente' : 'crescente'}`}
+            >
+              <FontAwesomeIcon icon={sortOrder === 'asc' ? faSortAlphaDown : faSortAlphaUp} />
+            </button>
+          </div>
         </div>
 
         <div className={styles.filters}>
@@ -140,10 +243,23 @@ export default function PersonalTreinos() {
           {filteredTemplates.map(template => (
             <div key={template.id} className={styles.card}>
               <div className={styles.cardHeader}>
-                <span className={styles.cardIcon}>
-                  <FontAwesomeIcon icon={template.icon} />
-                </span>
-                <span className={styles.cardType}>{template.type}</span>
+                <div className={styles.cardHeaderLeft}>
+                  <span className={styles.cardIcon}>
+                    <FontAwesomeIcon icon={template.icon} />
+                  </span>
+                  <span className={styles.cardType}>{template.type}</span>
+                </div>
+                {/* 🎯 MELHORIA 20: Botão de favorito */}
+                <button
+                  className={`${styles.favoriteBtn} ${favorites.includes(template.id) ? styles.favorited : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleFavorite(template.id)
+                  }}
+                  title={favorites.includes(template.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                >
+                  <FontAwesomeIcon icon={faHeart} />
+                </button>
               </div>
               <h3 className={styles.cardTitle}>{template.name}</h3>
               <div className={styles.cardStats}>
@@ -161,6 +277,13 @@ export default function PersonalTreinos() {
                 </div>
               </div>
               <div className={styles.cardActions}>
+                {/* 🎯 MELHORIA 18: Preview */}
+                <button
+                  className={styles.actionBtn}
+                  onClick={() => handlePreview(template)}
+                >
+                  <FontAwesomeIcon icon={faEye} /> Preview
+                </button>
                 <button
                   className={styles.actionBtn}
                   onClick={() => handleEditWorkout(template.id, template.name)}
@@ -255,6 +378,64 @@ export default function PersonalTreinos() {
             </div>
           </div>
         )}
+
+        {/* 🎯 MELHORIA 18: Modal de Preview */}
+        {showPreviewModal && previewWorkout && (
+          <div className={styles.modalOverlay} onClick={() => setShowPreviewModal(false)}>
+            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.modalHeader}>
+                <div>
+                  <h2>{previewWorkout.name}</h2>
+                  <p className={styles.previewType}>{previewWorkout.type}</p>
+                </div>
+                <button className={styles.modalClose} onClick={() => setShowPreviewModal(false)}>
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+              </div>
+              <div className={styles.modalContent}>
+                <div className={styles.previewStats}>
+                  <div className={styles.previewStat}>
+                    <FontAwesomeIcon icon={faList} />
+                    <span>{previewWorkout.exercises} exercícios</span>
+                  </div>
+                  <div className={styles.previewStat}>
+                    <FontAwesomeIcon icon={faUsers} />
+                    <span>{previewWorkout.students} alunos usando</span>
+                  </div>
+                </div>
+                <div className={styles.previewDescription}>
+                  <h4>Descrição</h4>
+                  <p>Este é um treino de {previewWorkout.type} com {previewWorkout.exercises} exercícios cuidadosamente selecionados.</p>
+                </div>
+              </div>
+              <div className={styles.modalFooter}>
+                <button className={styles.btnSecondary} onClick={() => setShowPreviewModal(false)}>
+                  Fechar
+                </button>
+                <button
+                  className={styles.btnPrimary}
+                  onClick={() => {
+                    setShowPreviewModal(false)
+                    handleEditWorkout(previewWorkout.id, previewWorkout.name)
+                  }}
+                >
+                  Editar Treino
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Toast Notifications */}
+        {toast.toasts.map((t) => (
+          <Toast
+            key={t.id}
+            message={t.message}
+            type={t.type}
+            duration={t.duration}
+            onClose={() => toast.removeToast(t.id)}
+          />
+        ))}
       </div>
     </Layout>
   )
