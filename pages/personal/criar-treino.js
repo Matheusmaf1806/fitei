@@ -286,10 +286,19 @@ export default function CriarTreino() {
                     onChange={(e) => setWorkoutType(e.target.value)}
                   >
                     <option>Musculação</option>
+                    <option>Aeróbico</option>
                     <option>Funcional</option>
                     <option>HIIT</option>
-                    <option>Cardio</option>
-                    <option>Misto</option>
+                    <option>Hydrox</option>
+                    <option>Jiu-Jitsu</option>
+                    <option>CrossFit</option>
+                    <option>Futebol</option>
+                    <option>Vôlei</option>
+                    <option>Basquete</option>
+                    <option>Natação</option>
+                    <option>Muay Thai</option>
+                    <option>Atletismo</option>
+                    <option>Surf</option>
                   </select>
                 </div>
               </div>
